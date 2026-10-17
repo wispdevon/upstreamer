@@ -118,12 +118,6 @@ function ThemeToggle() {
       title={label}
     >
       <Icon size={17} aria-hidden="true" />
-      <span className="theme-toggle-label-full">
-        {nextTheme === "dark" ? "Dark mode" : "Light mode"}
-      </span>
-      <span className="theme-toggle-label-short">
-        {nextTheme === "dark" ? "Dark" : "Light"}
-      </span>
     </button>
   );
 }
@@ -188,17 +182,13 @@ function StartPage() {
             <br />
             Contribute with care.
           </h1>
-          <p className="hero-copy">
-            A practical field guide to turning your ideas into open source
-            contributions someone else can maintain.
-          </p>
           <div className="actions">
             <Link className="button primary" to={`/learn/${next.id}`}>
               {state.completed.length ? "Continue learning" : "Start learning"}
               <Arrow />
             </Link>
             <Link className="button secondary" to="/studio">
-              Open the contribution studio
+              Draft a pull request
               <Arrow />
             </Link>
           </div>
@@ -207,11 +197,7 @@ function StartPage() {
       </section>
       <section className="home-bottom">
         <div className="quick-process">
-          <p className="eyebrow">The short version</p>
           <h2>Five steps from fork to pull request.</h2>
-          <p className="section-subtitle">
-            A compact path for work another maintainer can understand.
-          </p>
           <ol className="quick-process-list">
             {quickProcess.map((step, index) => (
               <li key={step.id}>
@@ -220,17 +206,14 @@ function StartPage() {
                 </span>
                 <div>
                   <h3>{step.title}</h3>
-                  <p>{step.detail}</p>
                 </div>
               </li>
             ))}
           </ol>
-          <TextLink to="/learn">Explore the full workflow</TextLink>
         </div>
         <article className="featured-pr-card">
-          <p className="eyebrow">A real fork-to-PR example · Click #3504</p>
+          <p className="eyebrow">Click · PR #3504</p>
           <h2>{featuredPullRequest.title}</h2>
-          <p className="featured-pr-copy">{featuredPullRequest.description}</p>
           <div className="pr-flow" role="group" aria-label="Pull request path">
             <div className="pr-flow-step">
               <span>Fork</span>
@@ -261,8 +244,7 @@ function StartPage() {
         </article>
       </section>
       <section className="entry-section">
-        <h2>Two ways in. One thoughtful contribution.</h2>
-        <p>Start where you are. Both paths lead to a better handoff.</p>
+        <h2>Choose a starting point.</h2>
         <div className="path-options">
           <Link
             to="/learn"
@@ -272,7 +254,6 @@ function StartPage() {
             <span className="path-number">01</span>
             <div>
               <h3>New to open source</h3>
-              <p>Find your footing, then make your first contribution.</p>
             </div>
             <Arrow />
           </Link>
@@ -284,17 +265,11 @@ function StartPage() {
             <span className="path-number">02</span>
             <div>
               <h3>Already building in a fork</h3>
-              <p>Turn your work into one focused upstream idea.</p>
             </div>
             <Arrow />
           </Link>
         </div>
       </section>
-      <div className="skill-strip">
-        <Sparkles size={20} />
-        <p>The same principles. An agent that puts them into practice.</p>
-        <TextLink to="/skill">Meet the companion skill</TextLink>
-      </div>
     </>
   );
 }
@@ -315,11 +290,6 @@ function App() {
     window.scrollTo(0, 0);
     mainRef.current?.focus({ preventScroll: true });
   }, [location.pathname]);
-  const crumb = location.pathname.startsWith("/learn/")
-    ? (lessons.find((lesson) => location.pathname.endsWith(`/${lesson.id}`))
-        ?.title ?? "Lesson")
-    : (navigation.find((item) => item.to === location.pathname)?.label ??
-      "Start here");
   return (
     <StateContext.Provider value={{ state, setState }}>
       <a className="skip-link" href="#main-content">
@@ -332,9 +302,6 @@ function App() {
               <GitBranch size={33} strokeWidth={1.7} aria-hidden="true" />
               <span>upstreamer.</span>
             </Link>
-            <p className="brand-caption">
-              An open source contribution field guide
-            </p>
           </div>
           <ThemeToggle />
         </div>
@@ -355,29 +322,26 @@ function App() {
         </nav>
       </header>
       <div className="workspace">
-        <div className="topbar">
-          <div>
-            <Link to="/">The field guide</Link>
-            <span className="breadcrumb-divider">/</span>
-            <span>{crumb}</span>
-          </div>
-          <div className="topbar-status">
-            <div className="header-progress">
-              <span>
-                {state.completed.length} / {lessons.length} lessons
-              </span>
-              <progress
-                value={state.completed.length}
-                max={lessons.length}
-                aria-label="Completed lessons"
-              />
-            </div>
-            <div className="save-indicator" role="status">
-              <Save size={15} aria-hidden="true" />
-              {saveStatus}
+        {location.pathname !== "/" && (
+          <div className="topbar">
+            <div className="topbar-status">
+              <div className="header-progress">
+                <span>
+                  {state.completed.length} / {lessons.length} lessons
+                </span>
+                <progress
+                  value={state.completed.length}
+                  max={lessons.length}
+                  aria-label="Completed lessons"
+                />
+              </div>
+              <div className="save-indicator" role="status">
+                <Save size={15} aria-hidden="true" />
+                {saveStatus}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {warning && (
           <div className="storage-warning" role="alert">
             {warning}

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { checks, lessons } from "../src/content";
+import { checks, lessons, quickProcess } from "../src/content";
 import { legacyStorageKey, storageKey } from "../src/model";
 
 test("the two entry paths lead to the intended lesson sequences", async ({ page }) => {
@@ -169,10 +169,19 @@ test("pill navigation fits mobile and desktop and exposes the active destination
 
 test("the homepage presents five clear steps beside a real fork-to-PR example", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator(".topbar")).toHaveCount(0);
+  await expect(page.getByText("The field guide", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".brand-caption")).toHaveCount(0);
+  await expect(page.locator(".hero-copy")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Five steps from fork to pull request." })).toBeVisible();
   await expect(page.locator(".quick-process-list li")).toHaveCount(5);
-  await expect(page.getByText("Make sure your fork is up to date, then create a feature branch for the work.")).toBeVisible();
+  await expect(page.locator(".quick-process-list p")).toHaveCount(0);
+  for (const step of quickProcess) {
+    await expect(page.getByRole("heading", { name: step.title, exact: true })).toBeVisible();
+    await expect(page.getByText(step.detail, { exact: true })).toHaveCount(0);
+  }
   await expect(page.getByRole("heading", { name: "Keep multi-line help intact in Fish completion" })).toBeVisible();
+  await expect(page.locator(".featured-pr-copy")).toHaveCount(0);
   await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("sitiyou/click");
   await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("fix-fish-completion");
   await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("pallets/click:main");
@@ -207,7 +216,10 @@ test("the home page and studio render without browser errors", async ({ page }) 
 test("the theme button toggles and persists the local dark-mode choice", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
-  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  const themeButton = page.getByRole("button", { name: "Switch to dark mode" });
+  await expect(themeButton).toHaveText("");
+  await expect(themeButton).toHaveCSS("border-radius", "20px");
+  await themeButton.click();
   await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute("content", "dark");
   await page.reload();
   await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();

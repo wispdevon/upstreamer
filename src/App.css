@@ -38,15 +38,6 @@
     font: 33px var(--serif);
     letter-spacing: -0.065em;
   }
-  .brand-caption {
-    color: var(--muted);
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    line-height: 1.5;
-    margin: 0;
-    max-width: 175px;
-  }
   .theme-toggle {
     display: inline-flex;
     align-items: center;
@@ -55,7 +46,7 @@
     min-height: 44px;
     padding-inline: 12px;
     border: 1px solid var(--line-strong);
-    border-radius: 4px;
+    border-radius: 20px;
     color: var(--ink);
     font-size: 12px;
     white-space: nowrap;
@@ -66,9 +57,6 @@
   }
   .theme-toggle svg {
     color: var(--rust);
-  }
-  .theme-toggle-label-short {
-    display: none;
   }
   .primary-nav {
     display: flex;
@@ -106,23 +94,13 @@
   }
   .topbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 12px 20px;
-    min-height: 64px;
-    padding-block: 10px;
+    min-height: 56px;
+    padding-block: 8px;
     border-bottom: 1px solid var(--line);
     color: var(--muted);
     font-size: 12px;
-  }
-  .topbar > div:first-child {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .breadcrumb-divider {
-    color: var(--muted);
   }
   .topbar-status,
   .header-progress,
@@ -206,12 +184,6 @@
     font-size: clamp(42px, 4.1vw, 68px);
     line-height: 1.03;
     letter-spacing: -0.055em;
-  }
-  .hero-copy {
-    margin-block: 23px 25px;
-    font-size: 17px;
-    line-height: 1.65;
-    max-width: 590px;
   }
   .fork-diagram {
     width: 100%;
@@ -330,10 +302,6 @@
   .entry-section h2 {
     font-size: clamp(26px, 2.8vw, 39px);
   }
-  .entry-section > p {
-    margin-top: 10px;
-    font-size: 15px;
-  }
   .path-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -362,9 +330,6 @@
     font-size: 23px;
     margin-bottom: 6px;
   }
-  .path-option p {
-    font-size: 14px;
-  }
   .path-option > svg {
     margin-inline-start: auto;
     color: var(--rust);
@@ -385,10 +350,6 @@
   }
   .quick-process h2 {
     font-size: 29px;
-  }
-  .section-subtitle {
-    font-size: 14px;
-    margin-block: 9px 15px;
   }
   .quick-process-list {
     list-style: none;
@@ -412,15 +373,6 @@
   .quick-process-list h3 {
     font: 19px/1.3 var(--serif);
   }
-  .quick-process-list p {
-    margin-top: 3px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .quick-process > .text-link {
-    margin-top: 10px;
-  }
   .featured-pr-card {
     display: flex;
     flex-direction: column;
@@ -433,10 +385,6 @@
     margin-block: 13px 14px;
     font: clamp(26px, 2.25vw, 34px)/1.14 var(--serif);
     letter-spacing: -0.035em;
-  }
-  .featured-pr-copy {
-    font-size: 14px;
-    line-height: 1.65;
   }
   .pr-flow {
     display: grid;
@@ -488,24 +436,6 @@
     letter-spacing: 1.5px;
     font-weight: 600;
     color: var(--muted);
-  }
-  .skill-strip {
-    display: flex;
-    gap: 13px;
-    align-items: center;
-    margin-top: 40px;
-    padding-block: 15px;
-    border-block: 1px solid var(--line);
-  }
-  .skill-strip > svg {
-    color: var(--rust);
-  }
-  .skill-strip p {
-    font-size: 13px;
-  }
-  .skill-strip .text-link {
-    margin-inline-start: auto;
-    font-size: 12px;
   }
   .page-heading {
     padding-block: 47px 33px;
@@ -1135,9 +1065,6 @@
   .path-option h3 {
     font-size: 21px;
   }
-  .path-option p {
-    font-size: 12px;
-  }
   .path-number {
     width: 42px;
     height: 42px;
@@ -1199,13 +1126,6 @@
   .home-bottom {
     gap: 30px;
   }
-  .skill-strip {
-    align-items: start;
-    flex-wrap: wrap;
-  }
-  .skill-strip .text-link {
-    margin-inline-start: 33px;
-  }
   .reading-layout,
   .studio-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -1244,20 +1164,9 @@
   .brand span {
     font-size: 31px;
   }
-  .brand-caption {
-    max-width: 190px;
-    margin: 5px 0 0 41px;
-    font-size: 8px;
-  }
   .theme-toggle {
     width: auto;
     padding-inline: 10px;
-  }
-  .theme-toggle-label-full {
-    display: none;
-  }
-  .theme-toggle-label-short {
-    display: inline;
   }
   .primary-nav {
     display: grid;
@@ -1280,12 +1189,8 @@
     padding-inline: 22px;
   }
   .topbar {
-    min-height: 62px;
+    min-height: 48px;
     font-size: 10px;
-    gap: 12px;
-  }
-  .topbar > div:first-child {
-    gap: 8px;
   }
   .topbar-status {
     gap: 10px;
@@ -1312,10 +1217,6 @@
     font-size: clamp(42px, 7.8vw, 58px);
     line-height: 1.09;
   }
-  .hero-copy {
-    font-size: 15px;
-    margin-block: 20px;
-  }
   .hero .actions {
     gap: 10px;
   }
@@ -1330,18 +1231,12 @@
   .entry-section h2 {
     font-size: 30px;
   }
-  .entry-section > p {
-    font-size: 14px;
-  }
   .path-option {
     gap: 15px;
     padding-block: 17px;
   }
   .path-option h3 {
     font-size: 23px;
-  }
-  .path-option p {
-    font-size: 13px;
   }
   .path-number {
     width: 40px;
@@ -1353,16 +1248,6 @@
   }
   .featured-pr-card h2 {
     font-size: 30px;
-  }
-  .skill-strip {
-    margin-top: 30px;
-    gap: 10px;
-  }
-  .skill-strip p {
-    max-width: calc(100% - 35px);
-  }
-  .skill-strip .text-link {
-    margin-inline-start: 30px;
   }
   .page-heading {
     padding-block: 34px 25px;
@@ -1531,10 +1416,6 @@
   }
   .brand-group {
     gap: 8px;
-  }
-  .brand-caption {
-    margin-inline-start: 38px;
-    font-size: 7px;
   }
   .topbar {
     align-items: flex-start;
