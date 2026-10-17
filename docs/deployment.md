@@ -5,19 +5,20 @@ Current release, deployed 17 October 2026:
 - Site: https://upstreamer.dev
 - Worker fallback: https://upstreamer.wispcream.workers.dev
 - Worker: `upstreamer`
-- Version: `0ee045c8-9088-4ecb-994f-259025608801`
-- Source commit: `9924976` on `main`
+- Version: `f08025eb-d5a9-4e15-a2b8-318f1b9c01c2`
+- Source commit: `97ddcc3` on `main`
 
-This release keeps the start-page headline and branch diagram within balanced columns, removes the figure's default margins, and stacks the two before they become cramped. It also replaces the separate workbench, checklist, draft, and field-notes screens with a single contribution studio. It keeps the top navigation to five pill buttons, migrates v1 progress and review answers, and preserves the previous local save unchanged.
+This release replaces the homepage's six-item contribution preview and quote panel with a concise five-step path beside a real fork-to-PR example. The example follows `sitiyou/click:fix-fish-completion` to `pallets/click:main` in Click PR #3504. The five-step process is generated from app content into version 3 of the companion agent-skill contract. The page retains the full workflow lessons and both learning paths below.
 
 ## Validation
 
-`pnpm deploy:check` passed: typecheck, lint, 7 unit tests, 15 Playwright tests, and production build. The updated home page was inspected at 1270×800 and 1024×900 in dark mode. Automated layout checks covered 360px, 768px, 1024px, 1270px, and 1440px widths, verified the diagram stays within the main content, and retained no-overflow, keyboard-focus, accessibility, and browser-error checks.
+`pnpm deploy:check` passed: typecheck, lint, 7 unit tests, 16 Playwright tests, and production build. The updated home page was inspected at 1440×1000 and 360×900 in dark mode. Automated layout checks covered 360px, 768px, 1024px, 1270px, and 1440px widths, verified the diagram stays within the main content, and checked no horizontal overflow, keyboard focus, accessibility, and browser errors.
 
-The production domain returned HTTP 200 for `/`, `/studio`, `/learn/dependencies`, and the skill ZIP. The Worker fallback returned HTTP 200 for `/`.
+The production domain returned HTTP 200 for `/`, `/studio`, `/learn/dependencies`, `/examples`, `/skill`, and the skill ZIP. The Worker fallback returned HTTP 200 for `/` and `/studio`.
 
 ## Deployment history
 
+- Previous proportional homepage release: `0ee045c8-9088-4ecb-994f-259025608801`.
 - Previous source-link release: `43cf5d84-4d98-4df9-9e19-010f8562545c`.
 - Navigation and theme release: `3ac5f556-0631-4f20-8b0d-a6390e6e416a`.
 - Initial launch: `90de8f37-5f72-41db-a54f-3da57a8c4875`.
