@@ -142,7 +142,7 @@ test("storage quota errors retain the session and allow Markdown export", async 
 });
 
 test("pill navigation fits mobile and desktop and exposes the active destination", async ({ page }) => {
-  for (const width of [360, 768, 1440]) {
+  for (const width of [360, 768, 1024, 1270, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main navigation" });
@@ -150,6 +150,12 @@ test("pill navigation fits mobile and desktop and exposes the active destination
     await expect(nav.getByRole("link", { name: "Start here" })).toHaveAttribute("aria-current", "page");
     await expect(nav.getByRole("link", { name: "Review & draft" })).toHaveCSS("border-radius", "999px");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    const diagram = await page.locator(".fork-diagram").boundingBox();
+    const main = await page.locator("main").boundingBox();
+    expect(diagram).not.toBeNull();
+    expect(main).not.toBeNull();
+    expect(diagram!.x).toBeGreaterThanOrEqual(main!.x);
+    expect(diagram!.x + diagram!.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
     await page.goto("/studio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
