@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, relative } from "node:path";
 import { unzipSync, strFromU8 } from "fflate";
 import { describe, expect, it } from "vitest";
-import { briefFields, checks, workflow } from "../../src/content";
+import { checks, workflow } from "../../src/content";
 
 describe("downloadable companion skill", () => {
   it("contains every skill source file exactly, with one installable top-level folder", () => {
@@ -27,7 +27,7 @@ describe("downloadable companion skill", () => {
         readFileSync(resolve(root, file), "utf8"),
       );
   });
-  it("shares workflow, checklist IDs, and brief fields with the app", () => {
+  it("shares workflow and checklist IDs with the app", () => {
     const contract = JSON.parse(
       readFileSync(
         "skills/fork-to-upstream/references/workflow-contract.json",
@@ -38,8 +38,7 @@ describe("downloadable companion skill", () => {
       workflow.map((item) => item.id),
     );
     expect(contract.checklist).toEqual(checks);
-    expect(contract.brief.map((item: { key: string }) => item.key)).toEqual(
-      briefFields.map((item) => item.key),
-    );
+    expect(contract.version).toBe(2);
+    expect(contract).not.toHaveProperty("brief");
   });
 });

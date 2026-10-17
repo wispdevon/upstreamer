@@ -44,10 +44,6 @@
     --feedback-dark: #392a24;
     --success-light: #e9ede2;
     --success-dark: #29362c;
-    --confirm-border-light: #c99c85;
-    --confirm-border-dark: #8f6252;
-    --confirm-light: #f5e9df;
-    --confirm-dark: #3d2e28;
     --neutral-border-light: #c9c9bd;
     --neutral-border-dark: #53594f;
     --warning-border-light: #bd8d63;
@@ -74,8 +70,6 @@
     --prose: var(--prose-light);
     --feedback: var(--feedback-light);
     --success: var(--success-light);
-    --confirm-border: var(--confirm-border-light);
-    --confirm: var(--confirm-light);
     --neutral-border: var(--neutral-border-light);
     --warning-border: var(--warning-border-light);
     --warning: var(--warning-light);
@@ -102,8 +96,6 @@
     --prose: var(--prose-dark);
     --feedback: var(--feedback-dark);
     --success: var(--success-dark);
-    --confirm-border: var(--confirm-border-dark);
-    --confirm: var(--confirm-dark);
     --neutral-border: var(--neutral-border-dark);
     --warning-border: var(--warning-border-dark);
     --warning: var(--warning-dark);
@@ -133,8 +125,6 @@
       --prose: var(--prose-dark);
       --feedback: var(--feedback-dark);
       --success: var(--success-dark);
-      --confirm-border: var(--confirm-border-dark);
-      --confirm: var(--confirm-dark);
       --neutral-border: var(--neutral-border-dark);
       --warning-border: var(--warning-border-dark);
       --warning: var(--warning-dark);
@@ -176,11 +166,6 @@
       --prose: light-dark(var(--prose-light), var(--prose-dark));
       --feedback: light-dark(var(--feedback-light), var(--feedback-dark));
       --success: light-dark(var(--success-light), var(--success-dark));
-      --confirm-border: light-dark(
-        var(--confirm-border-light),
-        var(--confirm-border-dark)
-      );
-      --confirm: light-dark(var(--confirm-light), var(--confirm-dark));
       --neutral-border: light-dark(
         var(--neutral-border-light),
         var(--neutral-border-dark)

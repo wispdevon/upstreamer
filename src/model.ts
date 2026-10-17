@@ -1,95 +1,192 @@
-import { briefFields, checks, lessons } from "./content";
-import type { Brief } from "./content";
+import { checks, lessons } from "./content";
 
 export type ReviewStatus = "unchecked" | "satisfied" | "not-applicable";
+
 export type AppState = {
-  version: 1;
+  version: 2;
   path: "beginner" | "fork";
   completed: string[];
-  notes: Record<string, string>;
-  brief: Brief;
   review: Record<string, ReviewStatus>;
   draft: string | null;
-  scratchpad: string;
 };
-export const storageKey = "upstream-field-guide-v1";
+
+export const legacyStorageKey = "upstream-field-guide-v1";
+export const storageKey = "upstream-field-guide-v2";
+
+export function createDraftTemplate(): string {
+  return `# Contribution title — incomplete
+
+## Problem and behavior
+
+Describe the problem and the behavior this change adds.
+
+## Scope and dependencies
+
+Explain what is included, what stays in the fork, and any prerequisites.
+
+## Verification
+
+Not run yet — record the actual commands, tested revision, and outcomes.
+
+## Limitations and open questions
+
+Record untested areas, risks, and questions for the maintainer.
+`;
+}
+
 export function createState(): AppState {
   return {
-    version: 1,
+    version: 2,
     path: "beginner",
     completed: [],
-    notes: {},
-    brief: Object.fromEntries(
-      briefFields.map((field) => [field.key, ""]),
-    ) as Brief,
     review: {},
     draft: null,
-    scratchpad: "",
   };
 }
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+function restoreReview(value: unknown): AppState["review"] {
+  const review: AppState["review"] = {};
+  if (!isRecord(value)) return review;
+
+  for (const check of checks) {
+    const answer = value[check.id];
+    if (
+      answer === "unchecked" ||
+      answer === "satisfied" ||
+      answer === "not-applicable"
+    ) {
+      review[check.id] = answer;
+    }
+  }
+  return review;
+}
+
+function restoreCompleted(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const ids = new Set(lessons.map((lesson) => lesson.id));
+  return [
+    ...new Set(
+      value.filter(
+        (id): id is string => typeof id === "string" && ids.has(id),
+      ),
+    ),
+  ];
+}
+
+function legacyBriefToDraft(brief: unknown): string | null {
+  if (!isRecord(brief)) return null;
+
+  const title =
+    typeof brief.title === "string" && brief.title.trim()
+      ? brief.title.trim()
+      : "Contribution title — incomplete";
+  const lines = [`# ${title}`, ""];
+  const addSection = (
+    heading: string,
+    key: string,
+    emptyText: string,
+  ) => {
+    const value = typeof brief[key] === "string" ? brief[key].trim() : "";
+    lines.push(`## ${heading}`, "", value || emptyText, "");
+  };
+
+  addSection("Problem", "problem", "Add the problem this change addresses.");
+  addSection(
+    "Resulting behavior",
+    "behavior",
+    "Describe what changes for users.",
+  );
+  addSection(
+    "Scope",
+    "scope",
+    "Explain what is included and what stays in the fork.",
+  );
+  addSection(
+    "Dependencies and prerequisites",
+    "dependencies",
+    "List prerequisites or say what still needs investigation.",
+  );
+  addSection(
+    "Verification",
+    "evidence",
+    "Not run yet — record the actual commands, tested revision, and outcomes.",
+  );
+  addSection(
+    "Limitations and open questions",
+    "limitations",
+    "Record untested areas, risks, and questions for the maintainer.",
+  );
+  addSection("Upstream context", "upstream", "Project context not recorded.");
+  addSection(
+    "Upstream base revision",
+    "base",
+    "Base revision not recorded.",
+  );
+  addSection(
+    "Extraction and attribution",
+    "extraction",
+    "Extraction approach not recorded.",
+  );
+
+  return lines.join("\n");
+}
+
+function restoreCurrent(data: Record<string, unknown>): AppState {
+  if (data.version !== 2) throw new Error("Unsupported state version");
+  return {
+    version: 2,
+    path: data.path === "fork" ? "fork" : "beginner",
+    completed: restoreCompleted(data.completed),
+    review: restoreReview(data.review),
+    draft: typeof data.draft === "string" ? data.draft : null,
+  };
+}
+
+function migrateLegacy(data: unknown): AppState {
+  if (!isRecord(data) || data.version !== 1) {
+    throw new Error("Invalid legacy state");
+  }
+  return {
+    version: 2,
+    path: data.path === "fork" ? "fork" : "beginner",
+    completed: restoreCompleted(data.completed),
+    review: restoreReview(data.review),
+    draft:
+      typeof data.draft === "string"
+        ? data.draft
+        : legacyBriefToDraft(data.brief),
+  };
+}
+
 export function loadState(storage: Pick<Storage, "getItem">): {
   state: AppState;
   warning: string;
 } {
-  const state = createState();
+  const fallback = createState();
   try {
     const raw = storage.getItem(storageKey);
-    if (!raw) return { state, warning: "" };
-    const data: unknown = JSON.parse(raw);
-    if (!isRecord(data) || data.version !== 1 || !isRecord(data.brief))
-      throw new Error("Invalid state");
-    let repaired = false;
-    for (const { key } of briefFields) {
-      if (typeof data.brief[key] === "string")
-        state.brief[key] = data.brief[key];
-      else repaired = true;
+    if (raw) {
+      const data: unknown = JSON.parse(raw);
+      if (!isRecord(data)) throw new Error("Invalid state");
+      return { state: restoreCurrent(data), warning: "" };
     }
-    const ids = new Set(lessons.map((lesson) => lesson.id));
-    if (Array.isArray(data.completed))
-      state.completed = [
-        ...new Set(
-          data.completed.filter(
-            (id): id is string => typeof id === "string" && ids.has(id),
-          ),
-        ),
-      ];
-    if (isRecord(data.notes)) {
-      for (const id of ids)
-        if (typeof data.notes[id] === "string")
-          state.notes[id] = data.notes[id];
-    }
-    if (isRecord(data.review)) {
-      for (const check of checks) {
-        const value = data.review[check.id];
-        if (
-          value === "unchecked" ||
-          value === "satisfied" ||
-          value === "not-applicable"
-        )
-          state.review[check.id] = value;
-      }
-    }
-    state.path = data.path === "fork" ? "fork" : "beginner";
-    state.draft = typeof data.draft === "string" ? data.draft : null;
-    state.scratchpad =
-      typeof data.scratchpad === "string" ? data.scratchpad : "";
-    return {
-      state,
-      warning: repaired
-        ? "Some saved fields could not be restored. Check your brief before continuing."
-        : "",
-    };
+
+    const legacyRaw = storage.getItem(legacyStorageKey);
+    if (!legacyRaw) return { state: fallback, warning: "" };
+    return { state: migrateLegacy(JSON.parse(legacyRaw)), warning: "" };
   } catch {
     return {
-      state,
+      state: fallback,
       warning:
         "Saved data could not be read. This session is usable; your existing saved data has not been changed.",
     };
   }
 }
+
 export function saveState(
   storage: Pick<Storage, "setItem">,
   state: AppState,
@@ -100,49 +197,6 @@ export function saveState(
   } catch {
     return false;
   }
-}
-export function generateDraft(brief: Brief): string {
-  const sections = [
-    [
-      "Upstream context",
-      brief.upstream ||
-        "Not recorded — add the project and relevant discussion.",
-    ],
-    [
-      "Base revision",
-      brief.base || "Not recorded — verify and record the upstream base.",
-    ],
-    ["Problem", brief.problem || "Incomplete — describe the user problem."],
-    [
-      "Resulting behavior",
-      brief.behavior || "Incomplete — describe what changes.",
-    ],
-    [
-      "Scope",
-      brief.scope || "Incomplete — define what is included and excluded.",
-    ],
-    [
-      "Dependencies and prerequisites",
-      brief.dependencies ||
-        "Not assessed — inspect code and runtime prerequisites.",
-    ],
-    [
-      "Extraction and attribution",
-      brief.extraction ||
-        "Not recorded — explain the upstream-based extraction approach and preserve credit.",
-    ],
-    [
-      "Verification",
-      brief.evidence ||
-        "Not run yet — record actual commands, tested revision, and outcomes.",
-    ],
-    [
-      "Limitations and open questions",
-      brief.limitations ||
-        "Not assessed — record untested areas, risks, and questions.",
-    ],
-  ];
-  return `# ${brief.title.trim() || "Contribution title — incomplete"}\n\n${sections.map(([heading, value]) => `## ${heading}\n\n${value.trim()}`).join("\n\n")}\n`;
 }
 
 export function downloadText(name: string, text: string) {

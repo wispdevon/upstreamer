@@ -49,4 +49,4 @@ Do not push, open PRs, post comments, or message maintainers unless the user req
 
 ## Companion app contract
 
-The app's shared workflow, checklist IDs, and brief fields are in [workflow-contract.json](references/workflow-contract.json). Consult it when consuming an app brief or aligning an output with the field guide. It defines vocabulary and questions, not proof that work has been performed. A handwritten brief is equally valid; no app, account, or special integration is required.
+The field guide's shared workflow and checklist IDs are in [workflow-contract.json](references/workflow-contract.json). Consult it when aligning an output with the guide. It defines vocabulary and questions, not proof that work has been performed. Use repository context and the user's request to shape the handoff; no app, account, or special integration is required.

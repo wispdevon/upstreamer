@@ -1,39 +1,86 @@
 import { describe, expect, it } from "vitest";
-import { createState, loadState, saveState, generateDraft } from "../../src/model";
+import {
+  createDraftTemplate,
+  createState,
+  legacyStorageKey,
+  loadState,
+  saveState,
+  storageKey,
+} from "../../src/model";
 
 describe("local contribution state", () => {
-  it("recovers from malformed or future saved data without throwing", () => {
+  it("recovers from malformed or incompatible saved data without throwing", () => {
     for (const value of [
       "{",
       "null",
       '{"version":99}',
       '{"version":1,"brief":null}',
     ]) {
-      const result = loadState({ getItem: () => value });
-      expect(result.state.brief.title).toBe("");
+      const result = loadState({
+        getItem: (key) => (key === storageKey ? value : null),
+      });
+      expect(result.state.review).toEqual({});
       expect(result.warning).toBeTruthy();
     }
   });
-  it("validates nested saved values and excludes unknown completion IDs", () => {
+
+  it("validates saved answers and excludes unknown completion IDs", () => {
     const value = {
       ...createState(),
       completed: ["maintainer", "unknown"],
-      notes: { maintainer: "<script>alert(1)</script>", bad: 5 },
-      brief: { ...createState().brief, title: 42 },
+      draft: 42,
       review: { dependencies: "satisfied", verification: "made-up" },
     };
-    const result = loadState({ getItem: () => JSON.stringify(value) });
+    const result = loadState({
+      getItem: (key) => (key === storageKey ? JSON.stringify(value) : null),
+    });
+
     expect(result.state.completed).toEqual(["maintainer"]);
-    expect(result.state.brief.title).toBe("");
-    expect(result.state.notes.maintainer).toBe("<script>alert(1)</script>");
+    expect(result.state.draft).toBeNull();
     expect(result.state.review.dependencies).toBe("satisfied");
     expect(result.state.review.verification).toBeUndefined();
   });
-  it("round trips a contribution and reports quota errors", () => {
+
+  it("migrates learning, review, and brief content without changing the old save", () => {
+    const legacy = JSON.stringify({
+      version: 1,
+      path: "fork",
+      completed: ["maintainer", "unknown"],
+      notes: { maintainer: "Keep this in the old local save." },
+      brief: {
+        title: "Remember export destination",
+        problem: "Repeated folder selection",
+        evidence: "Not run yet — verify on upstream/main.",
+      },
+      review: { dependencies: "satisfied" },
+      draft: null,
+      scratchpad: "Old loose notes stay in the legacy record.",
+    });
+    const values = new Map<string, string>([[legacyStorageKey, legacy]]);
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+    };
+
+    const result = loadState(storage);
+    expect(result.state.path).toBe("fork");
+    expect(result.state.completed).toEqual(["maintainer"]);
+    expect(result.state.review.dependencies).toBe("satisfied");
+    expect(result.state.draft).toContain("# Remember export destination");
+    expect(result.state.draft).toContain("Repeated folder selection");
+    expect(values.get(legacyStorageKey)).toBe(legacy);
+
+    expect(saveState(storage, result.state)).toBe(true);
+    expect(values.get(legacyStorageKey)).toBe(legacy);
+    expect(JSON.parse(values.get(storageKey)!).version).toBe(2);
+  });
+
+  it("round trips studio work and reports quota errors", () => {
     const state = createState();
-    state.brief.problem = "Repeated folder selection";
-    state.draft = "My edited draft";
+    state.draft = "My edited handoff";
+    state.review.dependencies = "satisfied";
     let stored = "";
+
     expect(
       saveState(
         {
@@ -44,7 +91,9 @@ describe("local contribution state", () => {
         state,
       ),
     ).toBe(true);
-    expect(loadState({ getItem: () => stored }).state).toEqual(state);
+    expect(
+      loadState({ getItem: () => stored }).state,
+    ).toEqual(state);
     expect(
       saveState(
         {
@@ -65,25 +114,12 @@ describe("local contribution state", () => {
   });
 });
 
-describe("PR handoff", () => {
-  it("leaves evidence explicitly incomplete instead of claiming checks passed", () => {
-    const draft = generateDraft(createState().brief);
+describe("contribution draft", () => {
+  it("starts with an honest, editable handoff template", () => {
+    const draft = createDraftTemplate();
+    expect(draft).toContain("# Contribution title — incomplete");
     expect(draft).toContain("Not run yet");
-    expect(draft).toContain("Not recorded");
+    expect(draft).toContain("Limitations and open questions");
     expect(draft).not.toContain("All tests pass");
-  });
-  it("includes exact evidence, limitations, and prerequisites supplied by the person", () => {
-    const brief = {
-      ...createState().brief,
-      title: "Cancel export",
-      dependencies: "Requires queue PR #12",
-      evidence: "pnpm test — failed at revision abc123",
-      limitations: "macOS untested",
-    };
-    const draft = generateDraft(brief);
-    expect(draft).toContain("# Cancel export");
-    expect(draft).toContain("Requires queue PR #12");
-    expect(draft).toContain("failed at revision abc123");
-    expect(draft).toContain("macOS untested");
   });
 });

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "workflow": [
     {
       "id": "maintainer",
@@ -72,58 +72,6 @@
       "id": "handoff",
       "title": "The maintainer has a clear handoff",
       "detail": "Explain the problem, behavior, dependencies, risks, and limitations using the project’s PR template."
-    }
-  ],
-  "brief": [
-    {
-      "key": "title",
-      "label": "Contribution title",
-      "purpose": "One concrete behavior, in a few words."
-    },
-    {
-      "key": "upstream",
-      "label": "Upstream project and context",
-      "purpose": "Project, contribution guidance, and relevant issue or discussion."
-    },
-    {
-      "key": "base",
-      "label": "Upstream base revision",
-      "purpose": "The branch and commit you will build and verify against."
-    },
-    {
-      "key": "problem",
-      "label": "The problem",
-      "purpose": "What happens today, and who does it affect?"
-    },
-    {
-      "key": "behavior",
-      "label": "The proposed behavior",
-      "purpose": "What will someone be able to do after this change?"
-    },
-    {
-      "key": "scope",
-      "label": "Scope and boundaries",
-      "purpose": "What is included? What stays in your fork?"
-    },
-    {
-      "key": "dependencies",
-      "label": "Dependencies and prerequisites",
-      "purpose": "What already exists upstream? What must come along or land first?"
-    },
-    {
-      "key": "extraction",
-      "label": "Extraction approach",
-      "purpose": "How will you isolate this idea from the rest of the fork?"
-    },
-    {
-      "key": "evidence",
-      "label": "Verification evidence",
-      "purpose": "Only record checks actually run, with revision, command, and result."
-    },
-    {
-      "key": "limitations",
-      "label": "Limitations and open questions",
-      "purpose": "Failed checks, untested platforms, risks, and decisions to discuss."
     }
   ]
 }

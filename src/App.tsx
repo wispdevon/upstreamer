@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import {
   ArrowRight,
   BookOpen,
@@ -9,8 +16,6 @@ import {
   GitBranch,
   House,
   Moon,
-  NotebookPen,
-  PenLine,
   Save,
   Sparkles,
   Sun,
@@ -19,24 +24,15 @@ import { foundations, lessons, workflow } from "./content";
 import { StateContext, useApp, usePersistentState } from "./state";
 import { Arrow, PageHeading, TextLink } from "./ui";
 import { ExamplePage, LearnPage, LessonPage } from "./Learning";
-import {
-  DraftPage,
-  NotesPage,
-  ReviewPage,
-  SkillPage,
-  WorkbenchPage,
-} from "./Tools";
+import { SkillPage, StudioPage } from "./Tools";
 import "./App.css";
 
 const navigation = [
   { to: "/", label: "Start here", icon: House },
   { to: "/learn", label: "Learn the workflow", icon: BookOpen },
   { to: "/examples", label: "Worked examples", icon: FileText },
-  { to: "/workbench", label: "PR workbench", icon: GitBranch },
-  { to: "/review", label: "Review checklist", icon: ClipboardCheck },
-  { to: "/draft", label: "Draft studio", icon: PenLine },
+  { to: "/studio", label: "Review & draft", icon: ClipboardCheck },
   { to: "/skill", label: "Agent skill", icon: Sparkles },
-  { to: "/notes", label: "Field notes", icon: NotebookPen },
 ];
 
 type ThemeChoice = "light" | "dark";
@@ -196,8 +192,8 @@ function StartPage() {
               {state.completed.length ? "Continue learning" : "Start learning"}
               <Arrow />
             </Link>
-            <Link className="button secondary" to="/workbench">
-              Open the workbench
+            <Link className="button secondary" to="/studio">
+              Open the contribution studio
               <Arrow />
             </Link>
           </div>
@@ -270,7 +266,7 @@ function StartPage() {
             Independent means it works from upstream. A smaller commit count
             does not make a smaller dependency.
           </p>
-          <TextLink to="/workbench">Try it in the workbench</TextLink>
+          <TextLink to="/studio">Try the contribution studio</TextLink>
         </aside>
       </section>
       <div className="skill-strip">
@@ -291,7 +287,7 @@ function App() {
       navigation.find(
         (item) => item.to !== "/" && location.pathname.startsWith(item.to),
       )?.label ??
-      (location.pathname === "/notes" ? "Field notes" : "Start here");
+      "Start here";
     document.title = `${label} · Upstreamer`;
     if (previousRoute.current === location.pathname) return;
     previousRoute.current = location.pathname;
@@ -302,7 +298,7 @@ function App() {
     ? (lessons.find((lesson) => location.pathname.endsWith(`/${lesson.id}`))
         ?.title ?? "Lesson")
     : (navigation.find((item) => item.to === location.pathname)?.label ??
-      "Field notes");
+      "Start here");
   return (
     <StateContext.Provider value={{ state, setState }}>
       <a className="skip-link" href="#main-content">
@@ -375,10 +371,20 @@ function App() {
               element={<LessonPage key={location.pathname} />}
             />
             <Route path="/examples" element={<ExamplePage />} />
-            <Route path="/workbench" element={<WorkbenchPage />} />
-            <Route path="/review" element={<ReviewPage />} />
-            <Route path="/draft" element={<DraftPage />} />
-            <Route path="/notes" element={<NotesPage />} />
+            <Route path="/studio" element={<StudioPage />} />
+            <Route
+              path="/workbench"
+              element={<Navigate to="/studio" replace />}
+            />
+            <Route
+              path="/review"
+              element={<Navigate to="/studio" replace />}
+            />
+            <Route
+              path="/draft"
+              element={<Navigate to="/studio" replace />}
+            />
+            <Route path="/notes" element={<Navigate to="/" replace />} />
             <Route path="/skill" element={<SkillPage />} />
             <Route
               path="*"

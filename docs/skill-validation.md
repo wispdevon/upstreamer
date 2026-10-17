@@ -1,6 +1,6 @@
 # Companion skill validation
 
-The source skill passes the skill-creator structural validator. Automated tests verify that its downloadable ZIP includes every source file and that its generated workflow/checklist/brief contract matches the app. Those checks validate packaging, not an agent's future decisions.
+Automated tests verify that its downloadable ZIP includes every source file and that its generated workflow/checklist contract matches the app. Those checks validate packaging, not an agent's future decisions.
 
 The following scenarios were reviewed against the instruction flow and references. This is a structured author review, not an independent model evaluation or a claim that real upstream contributions were performed.
 

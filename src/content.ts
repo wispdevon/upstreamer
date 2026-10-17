@@ -352,72 +352,6 @@ export const checks = [
   },
 ] as const;
 
-export const briefFields = [
-  {
-    key: "title",
-    label: "Contribution title",
-    hint: "One concrete behavior, in a few words.",
-    placeholder: "Remember the last export folder",
-  },
-  {
-    key: "upstream",
-    label: "Upstream project and context",
-    hint: "Project, contribution guidance, and relevant issue or discussion.",
-    placeholder: "Project URL, contribution rules, and discussion link",
-  },
-  {
-    key: "base",
-    label: "Upstream base revision",
-    hint: "The branch and commit you will build and verify against.",
-    placeholder: "upstream/main at <commit SHA>",
-  },
-  {
-    key: "problem",
-    label: "The problem",
-    hint: "What happens today, and who does it affect?",
-    placeholder: "Describe a reproducible user problem…",
-  },
-  {
-    key: "behavior",
-    label: "The proposed behavior",
-    hint: "What will someone be able to do after this change?",
-    placeholder: "Describe the observable improvement…",
-  },
-  {
-    key: "scope",
-    label: "Scope and boundaries",
-    hint: "What is included? What stays in your fork?",
-    placeholder: "Included changes and explicit non-goals…",
-  },
-  {
-    key: "dependencies",
-    label: "Dependencies and prerequisites",
-    hint: "What already exists upstream? What must come along or land first?",
-    placeholder: "Imports, services, configuration, assets, migrations…",
-  },
-  {
-    key: "extraction",
-    label: "Extraction approach",
-    hint: "How will you isolate this idea from the rest of the fork?",
-    placeholder: "Branch or worktree, commits, adaptation, attribution…",
-  },
-  {
-    key: "evidence",
-    label: "Verification evidence",
-    hint: "Only record checks actually run, with revision, command, and result.",
-    placeholder: "Not run yet. Record actual results here.",
-  },
-  {
-    key: "limitations",
-    label: "Limitations and open questions",
-    hint: "Failed checks, untested platforms, risks, and decisions to discuss.",
-    placeholder: "What still needs attention?",
-  },
-] as const;
-
-export type BriefKey = (typeof briefFields)[number]["key"];
-export type Brief = Record<BriefKey, string>;
-
 export const examples: {
   id: string;
   title: string;
@@ -425,7 +359,6 @@ export const examples: {
   type: string;
   narrative: string;
   lesson: string;
-  brief: Brief;
 }[] = [
   {
     id: "independent",
@@ -436,25 +369,6 @@ export const examples: {
       "Lantern is a fictional photo application. A personal fork adds a batch-export queue, new presets, and a preference that remembers the last destination. Only the preference fits the agreed upstream scope.",
     lesson:
       "Reuse upstream’s settings service. Extract the preference without the queue, presets, or new renderer, then verify it on the upstream base.",
-    brief: {
-      title: "Remember the last export folder",
-      upstream:
-        "Fictional project: Lantern. Discuss the preference with maintainers and follow its contribution guide.",
-      base: "Not recorded yet — verify the upstream default branch and record its commit SHA.",
-      problem:
-        "People must select the same export folder every time they export photos.",
-      behavior:
-        "The export dialog opens at the last successfully used folder, falling back to the existing default when that folder is unavailable.",
-      scope:
-        "Include the folder preference and regression coverage. Keep the batch queue, presets, and renderer experiments in the fork.",
-      dependencies:
-        "Use the settings service and export dialog already present upstream. No fork-only queue dependency is intended; verify this during extraction.",
-      extraction:
-        "Create a dedicated upstream-based worktree. Adapt the preference to upstream’s settings API and preserve the original authorship of any reused patch.",
-      evidence: "",
-      limitations:
-        "Not verified yet. Check unavailable folders, first-run behavior, and platform-specific folder access.",
-    },
   },
   {
     id: "hidden-dependency",
@@ -465,23 +379,5 @@ export const examples: {
       "In the fictional Lantern fork, a tiny cancel button calls ExportQueue.cancel(). The commit applies cleanly to upstream, but the queue service only exists in the fork. A small diff has concealed a substantial prerequisite.",
     lesson:
       "Trace the call into the fork-only queue. Discuss a prerequisite contribution or adapt to upstream’s cancellation mechanism before calling the button independent.",
-    brief: {
-      title: "Allow people to cancel an export",
-      upstream:
-        "Fictional project: Lantern. Confirm that cancellation fits upstream’s export design before implementation.",
-      base: "Not recorded yet — inspect upstream and record the tested base revision.",
-      problem: "A long export cannot be stopped from the interface.",
-      behavior:
-        "People can cancel an active export, with clear feedback and safe handling of partial output.",
-      scope:
-        "The button alone is insufficient. Decide whether to adapt existing upstream cancellation or propose the queue separately.",
-      dependencies:
-        "ExportQueue.cancel() is fork-only. Trace queue lifecycle, worker protocol, partial-file cleanup, and error reporting. These prerequisites remain unresolved.",
-      extraction:
-        "Do not cherry-pick the button and claim independence. Inspect upstream’s export architecture and discuss the smallest complete approach.",
-      evidence: "",
-      limitations:
-        "Blocked on dependency design. No independent build or runtime verification has been performed. Partial output and cancellation races need coverage.",
-    },
   },
 ];

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
-  ArrowRight,
   Check,
   CheckCircle2,
   Clock,
@@ -159,7 +158,6 @@ export function LessonPage() {
   const next = sequence[index + 1];
   const previous = sequence[index - 1];
   const complete = state.completed.includes(lesson.id);
-  const note = state.notes[lesson.id] ?? "";
   return (
     <>
       <div className="lesson-top">
@@ -238,27 +236,6 @@ export function LessonPage() {
               </div>
             )}
           </form>
-          <div className="lesson-notes">
-            <label htmlFor="lesson-note">Your field notes</label>
-            <p className="field-hint" id="note-hint">
-              Capture a question, a command to investigate, or something to
-              apply to your own fork.
-            </p>
-            <textarea
-              id="lesson-note"
-              name="lesson-note"
-              rows={4}
-              value={note}
-              aria-describedby="note-hint"
-              placeholder="What will you take into your next contribution?"
-              onChange={(event) =>
-                setState((old) => ({
-                  ...old,
-                  notes: { ...old.notes, [lesson.id]: event.target.value },
-                }))
-              }
-            />
-          </div>
           <div className="lesson-complete">
             <button
               className={`button ${complete ? "secondary" : "primary"}`}
@@ -292,7 +269,7 @@ export function LessonPage() {
             {next ? (
               <TextLink to={`/learn/${next.id}`}>{next.title}</TextLink>
             ) : (
-              <TextLink to="/workbench">Put it to work</TextLink>
+              <TextLink to="/studio">Put it to work</TextLink>
             )}
           </nav>
         </article>
@@ -300,10 +277,10 @@ export function LessonPage() {
           <p className="eyebrow">Take it into your work</p>
           <h3>A lesson becomes useful when you apply it.</h3>
           <p>
-            Keep one contribution in mind as you read. Build a brief you can
-            hand to a maintainer—or your agent.
+            Keep one contribution in mind as you read. Use the checklist and
+            draft together when you are ready to prepare a handoff.
           </p>
-          <TextLink to="/workbench">Open your brief</TextLink>
+          <TextLink to="/studio">Open the contribution studio</TextLink>
           <hr />
           <p className="small-print">
             Jump to any lesson. Work at your own pace.
@@ -316,23 +293,6 @@ export function LessonPage() {
 }
 
 export function ExamplePage() {
-  const { state, setState } = useApp();
-  const navigate = useNavigate();
-  const [pending, setPending] = useState<string | null>(null);
-  const load = (id: string) => {
-    const example = examples.find((item) => item.id === id)!;
-    setState((old) => ({
-      ...old,
-      brief: { ...example.brief },
-      draft: null,
-      review: {},
-    }));
-    navigate("/workbench");
-  };
-  const hasWork =
-    Object.values(state.brief).some(Boolean) ||
-    state.draft !== null ||
-    Object.keys(state.review).length > 0;
   return (
     <>
       <PageHeading
@@ -356,40 +316,7 @@ export function ExamplePage() {
                 <strong>The contribution decision</strong>
                 <p>{example.lesson}</p>
               </div>
-              {pending === example.id ? (
-                <div className="replace-confirm" role="alert">
-                  <p>
-                    This will replace your active brief, review answers, and
-                    draft. Export anything you want to keep first.
-                  </p>
-                  <div className="actions">
-                    <button
-                      className="button primary"
-                      onClick={() => load(example.id)}
-                    >
-                      Replace with this example
-                      <Arrow />
-                    </button>
-                    <button
-                      className="button secondary"
-                      onClick={() => setPending(null)}
-                    >
-                      Keep my work
-                    </button>
-                    <TextLink to="/draft">Export current draft</TextLink>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  className="text-link"
-                  onClick={() =>
-                    hasWork ? setPending(example.id) : load(example.id)
-                  }
-                >
-                  Explore this in the workbench
-                  <ArrowRight size={19} />
-                </button>
-              )}
+              <TextLink to="/studio">Use the contribution studio</TextLink>
             </div>
           </article>
         ))}
@@ -397,10 +324,10 @@ export function ExamplePage() {
       <div className="callout">
         <h3>Have your own idea?</h3>
         <p>
-          You can use the workbench with a real project without connecting an
-          account or sharing your repository.
+          Use the contribution studio with your own project. Your review and
+          draft stay on this device.
         </p>
-        <TextLink to="/workbench">Write your contribution brief</TextLink>
+        <TextLink to="/studio">Open the contribution studio</TextLink>
       </div>
     </>
   );
