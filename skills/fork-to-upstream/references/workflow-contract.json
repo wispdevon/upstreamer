@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "workflow": [
+    {
+      "id": "maintainer",
+      "title": "Start with the maintainer",
+      "purpose": "Your fork can serve your needs. Upstream needs a change it can own."
+    },
+    {
+      "id": "reviewable-idea",
+      "title": "Find one reviewable idea",
+      "purpose": "A contribution should have one reason to exist and a clear boundary."
+    },
+    {
+      "id": "dependencies",
+      "title": "Make dependencies explicit",
+      "purpose": "Trace what the idea actually needs, then prove it from upstream."
+    },
+    {
+      "id": "history",
+      "title": "Keep history honest",
+      "purpose": "Shape history for review while preserving credit and intent."
+    },
+    {
+      "id": "evidence",
+      "title": "Prove what you claim",
+      "purpose": "A trustworthy handoff distinguishes checked, failed, and untested."
+    },
+    {
+      "id": "handoff",
+      "title": "Write the handoff",
+      "purpose": "Help another person understand, verify, and maintain the change."
+    }
+  ],
+  "checklist": [
+    {
+      "id": "project-fit",
+      "title": "The change fits the project",
+      "detail": "Read contribution guidance and link the relevant issue or discussion. Account for the project’s AI contribution policy."
+    },
+    {
+      "id": "focused-scope",
+      "title": "There is one clear, reviewable idea",
+      "detail": "Describe the behavior and explain what stays in the fork. Remove unrelated cleanup."
+    },
+    {
+      "id": "dependencies",
+      "title": "Every prerequisite is accounted for",
+      "detail": "Trace code, configuration, assets, migrations, and runtime assumptions. State any required earlier PR."
+    },
+    {
+      "id": "upstream-base",
+      "title": "The contribution works from upstream",
+      "detail": "Record the upstream base revision and verify the extracted change in an upstream-based checkout."
+    },
+    {
+      "id": "attribution",
+      "title": "History and attribution are honest",
+      "detail": "Preserve authorship, license notices, and required sign-offs. Follow the project’s history conventions."
+    },
+    {
+      "id": "verification",
+      "title": "Verification is backed by evidence",
+      "detail": "Record actual commands and outcomes. Distinguish failures and untested areas from passing checks."
+    },
+    {
+      "id": "documentation",
+      "title": "Tests and documentation match the behavior",
+      "detail": "Add a meaningful regression check and update user-facing guidance when relevant."
+    },
+    {
+      "id": "handoff",
+      "title": "The maintainer has a clear handoff",
+      "detail": "Explain the problem, behavior, dependencies, risks, and limitations using the project’s PR template."
+    }
+  ],
+  "brief": [
+    {
+      "key": "title",
+      "label": "Contribution title",
+      "purpose": "One concrete behavior, in a few words."
+    },
+    {
+      "key": "upstream",
+      "label": "Upstream project and context",
+      "purpose": "Project, contribution guidance, and relevant issue or discussion."
+    },
+    {
+      "key": "base",
+      "label": "Upstream base revision",
+      "purpose": "The branch and commit you will build and verify against."
+    },
+    {
+      "key": "problem",
+      "label": "The problem",
+      "purpose": "What happens today, and who does it affect?"
+    },
+    {
+      "key": "behavior",
+      "label": "The proposed behavior",
+      "purpose": "What will someone be able to do after this change?"
+    },
+    {
+      "key": "scope",
+      "label": "Scope and boundaries",
+      "purpose": "What is included? What stays in your fork?"
+    },
+    {
+      "key": "dependencies",
+      "label": "Dependencies and prerequisites",
+      "purpose": "What already exists upstream? What must come along or land first?"
+    },
+    {
+      "key": "extraction",
+      "label": "Extraction approach",
+      "purpose": "How will you isolate this idea from the rest of the fork?"
+    },
+    {
+      "key": "evidence",
+      "label": "Verification evidence",
+      "purpose": "Only record checks actually run, with revision, command, and result."
+    },
+    {
+      "key": "limitations",
+      "label": "Limitations and open questions",
+      "purpose": "Failed checks, untested platforms, risks, and decisions to discuss."
+    }
+  ]
+}

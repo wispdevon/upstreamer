@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fork to Upstream"
+  short_description: "Prepare focused, maintainable upstream contributions"
+  default_prompt: "Use $fork-to-upstream to prepare one focused contribution from this fork, verify it against upstream, and draft the PR handoff without publishing."
