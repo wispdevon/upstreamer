@@ -167,6 +167,18 @@ test("pill navigation fits mobile and desktop and exposes the active destination
   await expect(page.getByRole("link", { name: "Learn the workflow" })).toBeFocused();
 });
 
+test("the homepage presents five clear steps beside a real fork-to-PR example", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Five steps from fork to pull request." })).toBeVisible();
+  await expect(page.locator(".quick-process-list li")).toHaveCount(5);
+  await expect(page.getByText("Make sure your fork is up to date, then create a feature branch for the work.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Keep multi-line help intact in Fish completion" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("sitiyou/click");
+  await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("fix-fish-completion");
+  await expect(page.getByRole("group", { name: "Pull request path" })).toContainText("pallets/click:main");
+  await expect(page.getByRole("link", { name: "Read pull request #3504" })).toHaveAttribute("href", "https://github.com/pallets/click/pull/3504");
+});
+
 test("home and studio meet WCAG A/AA automated checks", async ({ page }) => {
   for (const route of ["/", "/studio"]) {
     await page.goto(route);

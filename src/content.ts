@@ -301,6 +301,53 @@ export const lessons: Lesson[] = [
 export const workflow = lessons.filter((lesson) => !lesson.foundation);
 export const foundations = lessons.filter((lesson) => lesson.foundation);
 
+export const quickProcess = [
+  {
+    id: "identify",
+    title: "Identify a problem",
+    detail:
+      "Choose a problem or improvement you can confidently address.",
+  },
+  {
+    id: "branch",
+    title: "Update your fork, then branch",
+    detail:
+      "Make sure your fork is up to date, then create a feature branch for the work.",
+  },
+  {
+    id: "explore",
+    title: "Explore the wider effects",
+    detail:
+      "Consider alternate solutions, important constraints, and effects on related systems or features.",
+  },
+  {
+    id: "focus",
+    title: "Keep the change small",
+    detail:
+      "Make the smallest complete change possible. Avoid scope creep.",
+  },
+  {
+    id: "handoff",
+    title: "Explain the PR plainly",
+    detail:
+      "Write a concise PR that explains the problem, the change, and what you verified.",
+  },
+] as const;
+
+export const featuredPullRequest = {
+  title: "Keep multi-line help intact in Fish completion",
+  description:
+    "Fish uses newlines to separate completion results and tabs to separate help text. This change escapes embedded newlines, normalizes tabs in the help, and adds a regression test for multi-line descriptions.",
+  fork: "sitiyou/click",
+  branch: "fix-fish-completion",
+  upstream: "pallets/click",
+  base: "main",
+  url: "https://github.com/pallets/click/pull/3504",
+  merged: "Merged 23 May 2026",
+  commits: "2 commits",
+  files: "2 files",
+} as const;
+
 export const checks = [
   {
     id: "project-fit",

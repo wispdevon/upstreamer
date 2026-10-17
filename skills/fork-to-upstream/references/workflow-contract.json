@@ -1,5 +1,32 @@
 {
-  "version": 2,
+  "version": 3,
+  "quickProcess": [
+    {
+      "id": "identify",
+      "title": "Identify a problem",
+      "detail": "Choose a problem or improvement you can confidently address."
+    },
+    {
+      "id": "branch",
+      "title": "Update your fork, then branch",
+      "detail": "Make sure your fork is up to date, then create a feature branch for the work."
+    },
+    {
+      "id": "explore",
+      "title": "Explore the wider effects",
+      "detail": "Consider alternate solutions, important constraints, and effects on related systems or features."
+    },
+    {
+      "id": "focus",
+      "title": "Keep the change small",
+      "detail": "Make the smallest complete change possible. Avoid scope creep."
+    },
+    {
+      "id": "handoff",
+      "title": "Explain the PR plainly",
+      "detail": "Write a concise PR that explains the problem, the change, and what you verified."
+    }
+  ],
   "workflow": [
     {
       "id": "maintainer",

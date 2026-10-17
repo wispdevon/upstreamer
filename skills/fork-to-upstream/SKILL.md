@@ -7,6 +7,10 @@ description: Develop ideas in a fork and prepare focused upstream contributions,
 
 Prepare one contribution that another person can understand, verify, and maintain. A fork is a legitimate place for ambitious experimentation; upstream contributions need an explicit problem, coherent scope, and accounted-for prerequisites. Acceptance belongs to the project.
 
+## Five-step overview
+
+Use `quickProcess` in [workflow-contract.json](references/workflow-contract.json) as the concise contribution path shown in the companion app. The procedures below expand that path with project policy, dependency tracing, verification evidence, attribution, and a maintainer-ready handoff.
+
 ## Establish the task and project contract
 
 Read applicable AGENTS.md files, contribution guidance, code of conduct, license, issue/PR templates, and any AI-assistance policy. Inspect recent relevant changes and discussions available in the task context. Respect project-specific rules about design discussion, sign-offs, testing, and history.

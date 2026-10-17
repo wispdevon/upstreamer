@@ -10,7 +10,6 @@ import {
 import {
   ArrowRight,
   BookOpen,
-  Check,
   ClipboardCheck,
   FileText,
   GitBranch,
@@ -20,7 +19,13 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
-import { foundations, lessons, workflow } from "./content";
+import {
+  featuredPullRequest,
+  foundations,
+  lessons,
+  quickProcess,
+  workflow,
+} from "./content";
 import { StateContext, useApp, usePersistentState } from "./state";
 import { Arrow, PageHeading, TextLink } from "./ui";
 import { ExamplePage, LearnPage, LessonPage } from "./Learning";
@@ -200,6 +205,61 @@ function StartPage() {
         </div>
         <ForkDiagram />
       </section>
+      <section className="home-bottom">
+        <div className="quick-process">
+          <p className="eyebrow">The short version</p>
+          <h2>Five steps from fork to pull request.</h2>
+          <p className="section-subtitle">
+            A compact path for work another maintainer can understand.
+          </p>
+          <ol className="quick-process-list">
+            {quickProcess.map((step, index) => (
+              <li key={step.id}>
+                <span className="quick-step-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <TextLink to="/learn">Explore the full workflow</TextLink>
+        </div>
+        <article className="featured-pr-card">
+          <p className="eyebrow">A real fork-to-PR example · Click #3504</p>
+          <h2>{featuredPullRequest.title}</h2>
+          <p className="featured-pr-copy">{featuredPullRequest.description}</p>
+          <div className="pr-flow" role="group" aria-label="Pull request path">
+            <div className="pr-flow-step">
+              <span>Fork</span>
+              <strong>{featuredPullRequest.fork}</strong>
+            </div>
+            <ArrowRight aria-hidden="true" />
+            <div className="pr-flow-step">
+              <span>Feature branch</span>
+              <strong>{featuredPullRequest.branch}</strong>
+            </div>
+            <ArrowRight aria-hidden="true" />
+            <div className="pr-flow-step">
+              <span>Upstream</span>
+              <strong>
+                {featuredPullRequest.upstream}:{featuredPullRequest.base}
+              </strong>
+            </div>
+          </div>
+          <div className="featured-pr-meta" aria-label="Pull request result">
+            <span>{featuredPullRequest.merged}</span>
+            <span>{featuredPullRequest.commits}</span>
+            <span>{featuredPullRequest.files}</span>
+          </div>
+          <a className="text-link featured-pr-link" href={featuredPullRequest.url}>
+            Read pull request #3504
+            <Arrow />
+          </a>
+        </article>
+      </section>
       <section className="entry-section">
         <h2>Two ways in. One thoughtful contribution.</h2>
         <p>Start where you are. Both paths lead to a better handoff.</p>
@@ -229,45 +289,6 @@ function StartPage() {
             <Arrow />
           </Link>
         </div>
-      </section>
-      <section className="home-bottom">
-        <div>
-          <h2>The contribution path</h2>
-          <p className="section-subtitle">
-            Six habits that make your work easier to review.
-          </p>
-          <ol className="lesson-list">
-            {workflow.map((lesson, index) => (
-              <li key={lesson.id}>
-                <Link to={`/learn/${lesson.id}`}>
-                  <span className="lesson-number">
-                    {state.completed.includes(lesson.id) ? (
-                      <Check size={16} />
-                    ) : (
-                      `0${index + 1}`
-                    )}
-                  </span>
-                  <span>{lesson.title}</span>
-                  <ArrowRight size={16} />
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <aside className="quote-panel">
-          <span className="quote-mark" aria-hidden="true">
-            “
-          </span>
-          <p className="eyebrow">The question to ask first</p>
-          <blockquote>
-            Could someone merge this without taking the rest of my fork?
-          </blockquote>
-          <p>
-            Independent means it works from upstream. A smaller commit count
-            does not make a smaller dependency.
-          </p>
-          <TextLink to="/studio">Try the contribution studio</TextLink>
-        </aside>
       </section>
       <div className="skill-strip">
         <Sparkles size={20} />

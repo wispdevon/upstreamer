@@ -374,63 +374,111 @@
   }
   .home-bottom {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 3vw, 42px);
     padding-top: 7px;
     align-items: start;
   }
-  .home-bottom h2 {
+  .quick-process,
+  .featured-pr-card {
+    min-width: 0;
+  }
+  .quick-process h2 {
     font-size: 29px;
   }
   .section-subtitle {
     font-size: 14px;
     margin-block: 9px 15px;
   }
-  .lesson-list {
+  .quick-process-list {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  .lesson-list li {
+  .quick-process-list li {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 13px;
     border-bottom: 1px solid var(--line);
+    padding-block: 11px;
   }
-  .lesson-list li:first-child {
+  .quick-process-list li:first-child {
     border-top: 1px solid var(--line);
   }
-  .lesson-list a {
-    display: flex;
-    align-items: center;
-    gap: 17px;
-    min-height: 48px;
-  }
-  .lesson-list a > span:nth-child(2) {
-    font: 19px var(--serif);
-  }
-  .lesson-list a > svg {
-    margin-inline-start: auto;
-  }
-  .lesson-list a:hover {
+  .quick-step-number {
     color: var(--rust);
+    font: 17px/1.3 var(--serif);
   }
-  .lesson-number {
+  .quick-process-list h3 {
+    font: 19px/1.3 var(--serif);
+  }
+  .quick-process-list p {
+    margin-top: 3px;
     color: var(--muted);
-    font-size: 12px;
-    width: 24px;
-    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1.5;
   }
-  .quote-panel {
-    background: var(--panel);
-    padding: 29px 30px 25px;
+  .quick-process > .text-link {
+    margin-top: 10px;
+  }
+  .featured-pr-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(23px, 2.8vw, 34px);
+    border: 1px solid var(--line);
     border-radius: 5px;
-    min-height: 295px;
-    position: relative;
-    box-sizing: border-box;
+    background: var(--panel);
   }
-  .quote-mark {
-    color: var(--rust);
-    font: 80px/0.7 var(--serif);
+  .featured-pr-card h2 {
+    margin-block: 13px 14px;
+    font: clamp(26px, 2.25vw, 34px)/1.14 var(--serif);
+    letter-spacing: -0.035em;
+  }
+  .featured-pr-copy {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .pr-flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding-block: 17px;
+    margin-block: 18px 12px;
+    border-block: 1px solid var(--line);
+    list-style: none;
+  }
+  .pr-flow-step {
+    min-width: 0;
+  }
+  .pr-flow-step span {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .pr-flow-step strong {
     display: block;
-    height: 39px;
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .pr-flow > svg {
+    width: 15px;
+    color: var(--rust);
+  }
+  .featured-pr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 14px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .featured-pr-link {
+    align-self: flex-start;
+    margin-top: 12px;
+    padding-top: 11px;
   }
   .eyebrow {
     font:
@@ -440,20 +488,6 @@
     letter-spacing: 1.5px;
     font-weight: 600;
     color: var(--muted);
-  }
-  .quote-panel .eyebrow {
-    margin-block: 8px 13px;
-  }
-  .quote-panel blockquote {
-    font: clamp(25px, 2.1vw, 34px)/1.2 var(--serif);
-    letter-spacing: -0.035em;
-  }
-  .quote-panel > p:not(.eyebrow) {
-    margin-top: 18px;
-    font-size: 14px;
-  }
-  .quote-panel .text-link {
-    margin-top: 15px;
   }
   .skill-strip {
     display: flex;
@@ -1109,9 +1143,6 @@
     height: 42px;
     font-size: 20px;
   }
-  .quote-panel {
-    padding: 25px;
-  }
   .reading-layout {
     grid-template-columns: minmax(0, 1fr) 210px;
     gap: 30px;
@@ -1167,9 +1198,6 @@
   }
   .home-bottom {
     gap: 30px;
-  }
-  .quote-panel {
-    min-height: auto;
   }
   .skill-strip {
     align-items: start;
@@ -1320,13 +1348,10 @@
     height: 40px;
     font-size: 18px;
   }
-  .home-bottom h2 {
+  .quick-process h2 {
     font-size: 28px;
   }
-  .lesson-list a > span:nth-child(2) {
-    font-size: 18px;
-  }
-  .quote-panel blockquote {
+  .featured-pr-card h2 {
     font-size: 30px;
   }
   .skill-strip {

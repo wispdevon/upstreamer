@@ -2,12 +2,13 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { zipSync } from "fflate";
-import { checks, workflow } from "../src/content.ts";
+import { checks, quickProcess, workflow } from "../src/content.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const skillRoot = path.join(root, "skills/fork-to-upstream");
 const contract = {
-  version: 2,
+  version: 3,
+  quickProcess,
   workflow: workflow.map(({ id, title, intro }) => ({
     id,
     title,
