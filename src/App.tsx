@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import {
   featuredPullRequest,
-  foundations,
   lessons,
   quickProcess,
   workflow,
@@ -103,7 +102,7 @@ function ThemeToggle() {
       'meta[name="theme-color"]',
     );
     if (themeColor) {
-      themeColor.content = theme === "dark" ? "#1b1d19" : "#f8f7f3";
+      themeColor.content = theme === "dark" ? "#313233" : "#f8f7f3";
     }
   }, [theme]);
 
@@ -168,11 +167,10 @@ function ForkDiagram() {
 }
 function StartPage() {
   const { state, setState } = useApp();
-  const first = state.path === "fork" ? workflow[0] : foundations[0];
-  const next =
-    (state.path === "fork" ? workflow : lessons).find(
-      (lesson) => !state.completed.includes(lesson.id),
-    ) ?? first;
+  const nextLesson = (path: "beginner" | "fork") => {
+    const selected = path === "fork" ? workflow : lessons;
+    return selected.find((lesson) => !state.completed.includes(lesson.id)) ?? selected[0];
+  };
   return (
     <>
       <section className="hero">
@@ -182,46 +180,23 @@ function StartPage() {
             <br />
             Contribute with care.
           </h1>
-          <div className="actions">
-            <Link className="button primary" to={`/learn/${next.id}`}>
-              {state.completed.length ? "Continue learning" : "Start learning"}
-              <Arrow />
-            </Link>
-            <Link className="button secondary" to="/studio">
-              Draft a pull request
-              <Arrow />
-            </Link>
-          </div>
+          <Link className="text-link hero-draft-link" to="/studio">
+            Draft a pull request <Arrow />
+          </Link>
         </div>
-        <div className="hero-start">
-          <ForkDiagram />
-          <section className="path-card" aria-labelledby="starting-point-title">
-            <h2 id="starting-point-title">Choose a starting point.</h2>
-            <fieldset
-              className="home-path-selector"
-              aria-labelledby="starting-point-title"
+        <ForkDiagram />
+        <div className="hero-paths flex flex-wrap gap-4" role="group" aria-label="Choose a starting point">
+          {(["beginner", "fork"] as const).map((path) => (
+            <Link
+              key={path}
+              className={`button ${path === "beginner" ? "primary" : "secondary"}`}
+              to={`/learn/${nextLesson(path).id}`}
+              onClick={() => setState((old) => ({ ...old, path }))}
             >
-              {(["beginner", "fork"] as const).map((path) => (
-                <label key={path}>
-                  <input
-                    type="radio"
-                    name="learning-path"
-                    checked={state.path === path}
-                    onChange={() => setState((old) => ({ ...old, path }))}
-                  />
-                  <span>
-                    {path === "beginner"
-                      ? "New to open source"
-                      : "Already building in a fork"}
-                  </span>
-                </label>
-              ))}
-            </fieldset>
-            <Link className="button primary" to={`/learn/${next.id}`}>
-              {state.completed.length ? "Continue learning" : "Start learning"}
+              {path === "beginner" ? "New to opensource" : "Already building a fork?"}
               <Arrow />
             </Link>
-          </section>
+          ))}
         </div>
       </section>
       <section className="home-bottom">
@@ -305,23 +280,23 @@ function App() {
               <span>upstreamer.</span>
             </Link>
           </div>
+          <nav className="primary-nav" aria-label="Main navigation">
+            {navigation.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  `nav-button${isActive ? " active" : ""}`
+                }
+              >
+                <item.icon size={18} strokeWidth={1.7} aria-hidden="true" />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
           <ThemeToggle />
         </div>
-        <nav className="primary-nav" aria-label="Main navigation">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              className={({ isActive }) =>
-                `nav-button${isActive ? " active" : ""}`
-              }
-            >
-              <item.icon size={18} strokeWidth={1.7} aria-hidden="true" />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
       </header>
       <div className="workspace">
         {location.pathname !== "/" && (

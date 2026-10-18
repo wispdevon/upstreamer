@@ -32,6 +32,8 @@ pnpm build
 
 The test command regenerates the skill before checking package integrity. Browser tests cover both learning paths, all ten exercises, local persistence and migration, the combined review-and-draft studio, Markdown downloads, safe text preview, legacy routes, responsive pill navigation, and WCAG 2.1 AA checks with axe.
 
+The app uses Tailwind CSS through its Vite plugin, with shared palette tokens in `src/index.css`. Existing editorial base styles are preserved; Tailwind theme and utility layers are enabled without Preflight.
+
 ## Product structure
 
 - `src/content.ts`: lesson content, two fictional examples, canonical workflow IDs, and checklist definitions.

@@ -3,61 +3,50 @@ import AxeBuilder from "@axe-core/playwright";
 import { checks, lessons, quickProcess, workflow } from "../src/content";
 import { createState, legacyStorageKey, storageKey } from "../src/model";
 
-test("the homepage path choice persists and opens the intended lesson sequence", async ({ page }) => {
+test("the homepage path buttons save the choice and open the intended sequence", async ({ page }) => {
   await page.goto("/");
-  const card = page.getByRole("region", { name: "Choose a starting point." });
-  await expect(card.getByRole("radio", { name: "New to open source" })).toBeChecked();
-  await expect(card.getByRole("link", { name: "Start learning" })).toHaveAttribute("href", `/learn/${lessons[0].id}`);
-  await card.getByRole("radio", { name: "Already building in a fork" }).check();
-  await expect(page).toHaveURL(/\/$/);
-  await page.reload();
-  await expect(card.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
-  await card.getByRole("link", { name: "Start learning" }).click();
+  await expect(page.getByRole("link", { name: "Start learning" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "New to opensource" })).toHaveAttribute("href", `/learn/${lessons[0].id}`);
+  await page.getByRole("link", { name: "Already building a fork?" }).click();
   await expect(page).toHaveURL(`/learn/${workflow[0].id}`);
   await expect(page.locator("main")).toBeFocused();
   await page.getByRole("link", { name: "Learn the workflow", exact: true }).click();
   await expect(page.locator(".catalog-list li")).toHaveCount(6);
-  await page.getByRole("link", { name: "Start here", exact: true }).click();
-  await card.getByRole("radio", { name: "New to open source" }).check();
   await page.reload();
-  await expect(card.getByRole("radio", { name: "New to open source" })).toBeChecked();
-  await card.getByRole("link", { name: "Start learning" }).click();
+  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
+  await page.getByRole("link", { name: "Start here", exact: true }).click();
+  await page.getByRole("link", { name: "New to opensource" }).click();
   await expect(page).toHaveURL(`/learn/${lessons[0].id}`);
   await page.getByRole("link", { name: "Learn the workflow", exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole("radio", { name: "New to open source" })).toBeChecked();
   await expect(page.locator(".catalog-list li")).toHaveCount(10);
 });
 
 for (const path of ["beginner", "fork"] as const) {
   for (const complete of [false, true]) {
-    test(`the ${path} homepage resumes ${complete ? "a completed path at its first lesson" : "at its first incomplete lesson"}`, async ({ page }) => {
+    test(`the ${path} homepage button opens ${complete ? "a completed path at its first lesson" : "its first incomplete lesson"}`, async ({ page }) => {
       const selected = path === "fork" ? workflow : lessons;
       const completed = (complete ? selected : [selected[0], selected[2]]).map((lesson) => lesson.id);
       await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
         key: storageKey,
-        value: JSON.stringify({ ...createState(), path, completed }),
+        value: JSON.stringify({ ...createState(), path: path === "fork" ? "beginner" : "fork", completed }),
       });
       await page.goto("/");
       const next = complete ? selected[0] : selected[1];
-      const card = page.getByRole("region", { name: "Choose a starting point." });
-      await expect(card.getByRole("radio", { name: path === "fork" ? "Already building in a fork" : "New to open source" })).toBeChecked();
-      await expect(page.locator(".hero .actions").getByRole("link", { name: "Continue learning" })).toHaveAttribute("href", `/learn/${next.id}`);
-      await card.getByRole("link", { name: "Continue learning" }).click();
+      await page.getByRole("link", { name: path === "fork" ? "Already building a fork?" : "New to opensource" }).click();
       await expect(page).toHaveURL(`/learn/${next.id}`);
     });
   }
 }
 
-test("the homepage path card supports keyboard selection and activation", async ({ page }) => {
+test("the homepage path buttons support keyboard activation", async ({ page }) => {
   await page.goto("/");
-  const beginner = page.getByRole("radio", { name: "New to open source" });
   await page.getByRole("link", { name: "Draft a pull request" }).focus();
   await page.keyboard.press("Tab");
-  await expect(beginner).toBeFocused();
-  await page.keyboard.press("ArrowDown");
-  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeFocused();
-  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
+  await expect(page.getByRole("link", { name: "New to opensource" })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("region", { name: "Choose a starting point." }).getByRole("link", { name: "Start learning" })).toBeFocused();
+  await expect(page.getByRole("link", { name: "Already building a fork?" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(`/learn/${workflow[0].id}`);
 });
@@ -204,29 +193,35 @@ test("pill navigation fits mobile and desktop and exposes the active destination
     expect(main).not.toBeNull();
     expect(diagram!.x).toBeGreaterThanOrEqual(main!.x);
     expect(diagram!.x + diagram!.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
-    const card = (await page.getByRole("region", { name: "Choose a starting point." }).boundingBox())!;
-    expect(card.x).toBeGreaterThanOrEqual(main!.x);
-    expect(card.x + card.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
-    const heroActions = (await page.locator(".hero .actions").boundingBox())!;
+    const heroActions = (await page.getByRole("group", { name: "Choose a starting point" }).boundingBox())!;
+    expect(heroActions.x).toBeGreaterThanOrEqual(main!.x);
+    expect(heroActions.x + heroActions.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
+    expect(heroActions.y).toBeGreaterThanOrEqual(diagram!.y + diagram!.height);
+    if (width >= 1270) {
+      const brand = (await page.locator(".brand").boundingBox())!;
+      const theme = (await page.locator(".theme-toggle").boundingBox())!;
+      const links = await nav.getByRole("link").all();
+      for (const link of links) {
+        const box = (await link.boundingBox())!;
+        expect(Math.abs(box.y + box.height / 2 - (brand.y + brand.height / 2))).toBeLessThan(2);
+        expect(box.x).toBeGreaterThanOrEqual(brand.x + brand.width);
+        expect(box.x + box.width).toBeLessThanOrEqual(theme.x);
+      }
+    }
     if (width <= 700) {
-      expect(diagram!.y).toBeGreaterThanOrEqual(heroActions.y + heroActions.height);
-      expect(card.y).toBeGreaterThanOrEqual(diagram!.y + diagram!.height);
+      const heading = (await page.locator(".hero h1").boundingBox())!;
+      expect(diagram!.y).toBeGreaterThanOrEqual(heading.y + heading.height);
       const steps = (await page.locator(".quick-process").boundingBox())!;
       const featured = (await page.locator(".featured-pr-card").boundingBox())!;
-      expect(steps.y).toBeGreaterThanOrEqual(card.y + card.height);
+      expect(steps.y).toBeGreaterThanOrEqual(heroActions.y + heroActions.height);
       expect(featured.y).toBeGreaterThanOrEqual(steps.y + steps.height);
-    } else if (width > 1080) {
-      expect(card.y).toBeGreaterThanOrEqual(diagram!.y + diagram!.height);
-      expect(card.x).toBeGreaterThanOrEqual(heroActions.x + heroActions.width);
-    } else {
-      expect(card.x).toBeGreaterThanOrEqual(diagram!.x + diagram!.width);
     }
     await page.goto("/studio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  for (let i = 0; i < 4; i += 1) await page.keyboard.press("Tab");
+  for (let i = 0; i < 3; i += 1) await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Start here" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Learn the workflow" })).toBeFocused();
