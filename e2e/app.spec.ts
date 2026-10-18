@@ -1,17 +1,65 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { checks, lessons, quickProcess } from "../src/content";
-import { legacyStorageKey, storageKey } from "../src/model";
+import { checks, lessons, quickProcess, workflow } from "../src/content";
+import { createState, legacyStorageKey, storageKey } from "../src/model";
 
-test("the two entry paths lead to the intended lesson sequences", async ({ page }) => {
+test("the homepage path choice persists and opens the intended lesson sequence", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: /Already building in a fork/ }).click();
-  await expect(page.locator(".catalog-list li")).toHaveCount(6);
-  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
-  await page.getByRole("radio", { name: "New to open source" }).check();
-  await expect(page.locator(".catalog-list li")).toHaveCount(10);
+  const card = page.getByRole("region", { name: "Choose a starting point." });
+  await expect(card.getByRole("radio", { name: "New to open source" })).toBeChecked();
+  await expect(card.getByRole("link", { name: "Start learning" })).toHaveAttribute("href", `/learn/${lessons[0].id}`);
+  await card.getByRole("radio", { name: "Already building in a fork" }).check();
+  await expect(page).toHaveURL(/\/$/);
   await page.reload();
-  await expect(page.getByRole("radio", { name: "New to open source" })).toBeChecked();
+  await expect(card.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
+  await card.getByRole("link", { name: "Start learning" }).click();
+  await expect(page).toHaveURL(`/learn/${workflow[0].id}`);
+  await expect(page.locator("main")).toBeFocused();
+  await page.getByRole("link", { name: "Learn the workflow", exact: true }).click();
+  await expect(page.locator(".catalog-list li")).toHaveCount(6);
+  await page.getByRole("link", { name: "Start here", exact: true }).click();
+  await card.getByRole("radio", { name: "New to open source" }).check();
+  await page.reload();
+  await expect(card.getByRole("radio", { name: "New to open source" })).toBeChecked();
+  await card.getByRole("link", { name: "Start learning" }).click();
+  await expect(page).toHaveURL(`/learn/${lessons[0].id}`);
+  await page.getByRole("link", { name: "Learn the workflow", exact: true }).click();
+  await expect(page.locator(".catalog-list li")).toHaveCount(10);
+});
+
+for (const path of ["beginner", "fork"] as const) {
+  for (const complete of [false, true]) {
+    test(`the ${path} homepage resumes ${complete ? "a completed path at its first lesson" : "at its first incomplete lesson"}`, async ({ page }) => {
+      const selected = path === "fork" ? workflow : lessons;
+      const completed = (complete ? selected : [selected[0], selected[2]]).map((lesson) => lesson.id);
+      await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+        key: storageKey,
+        value: JSON.stringify({ ...createState(), path, completed }),
+      });
+      await page.goto("/");
+      const next = complete ? selected[0] : selected[1];
+      const card = page.getByRole("region", { name: "Choose a starting point." });
+      await expect(card.getByRole("radio", { name: path === "fork" ? "Already building in a fork" : "New to open source" })).toBeChecked();
+      await expect(page.locator(".hero .actions").getByRole("link", { name: "Continue learning" })).toHaveAttribute("href", `/learn/${next.id}`);
+      await card.getByRole("link", { name: "Continue learning" }).click();
+      await expect(page).toHaveURL(`/learn/${next.id}`);
+    });
+  }
+}
+
+test("the homepage path card supports keyboard selection and activation", async ({ page }) => {
+  await page.goto("/");
+  const beginner = page.getByRole("radio", { name: "New to open source" });
+  await page.getByRole("link", { name: "Draft a pull request" }).focus();
+  await page.keyboard.press("Tab");
+  await expect(beginner).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeFocused();
+  await expect(page.getByRole("radio", { name: "Already building in a fork" })).toBeChecked();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("region", { name: "Choose a starting point." }).getByRole("link", { name: "Start learning" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(`/learn/${workflow[0].id}`);
 });
 
 test("lesson exercises, completion, and route focus work together", async ({ page }) => {
@@ -156,6 +204,23 @@ test("pill navigation fits mobile and desktop and exposes the active destination
     expect(main).not.toBeNull();
     expect(diagram!.x).toBeGreaterThanOrEqual(main!.x);
     expect(diagram!.x + diagram!.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
+    const card = (await page.getByRole("region", { name: "Choose a starting point." }).boundingBox())!;
+    expect(card.x).toBeGreaterThanOrEqual(main!.x);
+    expect(card.x + card.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
+    const heroActions = (await page.locator(".hero .actions").boundingBox())!;
+    if (width <= 700) {
+      expect(diagram!.y).toBeGreaterThanOrEqual(heroActions.y + heroActions.height);
+      expect(card.y).toBeGreaterThanOrEqual(diagram!.y + diagram!.height);
+      const steps = (await page.locator(".quick-process").boundingBox())!;
+      const featured = (await page.locator(".featured-pr-card").boundingBox())!;
+      expect(steps.y).toBeGreaterThanOrEqual(card.y + card.height);
+      expect(featured.y).toBeGreaterThanOrEqual(steps.y + steps.height);
+    } else if (width > 1080) {
+      expect(card.y).toBeGreaterThanOrEqual(diagram!.y + diagram!.height);
+      expect(card.x).toBeGreaterThanOrEqual(heroActions.x + heroActions.width);
+    } else {
+      expect(card.x).toBeGreaterThanOrEqual(diagram!.x + diagram!.width);
+    }
     await page.goto("/studio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
@@ -189,10 +254,16 @@ test("the homepage presents five clear steps beside a real fork-to-PR example", 
 });
 
 test("home and studio meet WCAG A/AA automated checks", async ({ page }) => {
-  for (const route of ["/", "/studio"]) {
-    await page.goto(route);
-    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
-    expect(results.violations).toEqual([]);
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    for (const width of [360, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const route of ["/", "/studio"]) {
+        await page.goto(route);
+        const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+        expect(results.violations).toEqual([]);
+      }
+    }
   }
 });
 

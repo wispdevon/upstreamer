@@ -193,7 +193,36 @@ function StartPage() {
             </Link>
           </div>
         </div>
-        <ForkDiagram />
+        <div className="hero-start">
+          <ForkDiagram />
+          <section className="path-card" aria-labelledby="starting-point-title">
+            <h2 id="starting-point-title">Choose a starting point.</h2>
+            <fieldset
+              className="home-path-selector"
+              aria-labelledby="starting-point-title"
+            >
+              {(["beginner", "fork"] as const).map((path) => (
+                <label key={path}>
+                  <input
+                    type="radio"
+                    name="learning-path"
+                    checked={state.path === path}
+                    onChange={() => setState((old) => ({ ...old, path }))}
+                  />
+                  <span>
+                    {path === "beginner"
+                      ? "New to open source"
+                      : "Already building in a fork"}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            <Link className="button primary" to={`/learn/${next.id}`}>
+              {state.completed.length ? "Continue learning" : "Start learning"}
+              <Arrow />
+            </Link>
+          </section>
+        </div>
       </section>
       <section className="home-bottom">
         <div className="quick-process">
@@ -242,33 +271,6 @@ function StartPage() {
             <Arrow />
           </a>
         </article>
-      </section>
-      <section className="entry-section">
-        <h2>Choose a starting point.</h2>
-        <div className="path-options">
-          <Link
-            to="/learn"
-            className="path-option"
-            onClick={() => setState((old) => ({ ...old, path: "beginner" }))}
-          >
-            <span className="path-number">01</span>
-            <div>
-              <h3>New to open source</h3>
-            </div>
-            <Arrow />
-          </Link>
-          <Link
-            to="/learn"
-            className="path-option"
-            onClick={() => setState((old) => ({ ...old, path: "fork" }))}
-          >
-            <span className="path-number">02</span>
-            <div>
-              <h3>Already building in a fork</h3>
-            </div>
-            <Arrow />
-          </Link>
-        </div>
       </section>
     </>
   );

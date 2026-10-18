@@ -173,7 +173,7 @@
     grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
     gap: clamp(22px, 3vw, 40px);
     padding-block: clamp(38px, 3.8vw, 52px) clamp(34px, 3.2vw, 44px);
-    align-items: center;
+    align-items: start;
     border-bottom: 1px solid var(--line);
   }
   .hero > div,
@@ -296,52 +296,47 @@
   .text-link.muted {
     color: var(--muted);
   }
-  .entry-section {
-    padding-block: 32px 27px;
+  .hero .actions {
+    margin-top: 30px;
   }
-  .entry-section h2 {
-    font-size: clamp(26px, 2.8vw, 39px);
+  .hero-start {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
-  .path-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-top: 26px;
-    gap: 40px;
+  .path-card {
+    padding: clamp(22px, 2.4vw, 30px);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--panel);
   }
-  .path-option {
+  .path-card h2 {
+    font-size: clamp(26px, 2.4vw, 34px);
+  }
+  .home-path-selector {
+    margin-block: 16px 20px;
+  }
+  .home-path-selector label {
     display: flex;
     align-items: center;
-    gap: 18px;
-    border-bottom: 1px solid var(--line);
-    padding-block: 12px 24px;
+    gap: 12px;
+    min-height: 48px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1.5;
   }
-  .path-number {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    display: grid;
-    place-items: center;
-    color: var(--rust);
-    font: 23px var(--serif);
-    flex-shrink: 0;
+  .home-path-selector input {
+    border-color: var(--muted);
   }
-  .path-option h3 {
-    font-size: 23px;
-    margin-bottom: 6px;
-  }
-  .path-option > svg {
-    margin-inline-start: auto;
-    color: var(--rust);
-  }
-  .path-option:hover h3 {
-    color: var(--rust);
+  .path-card .button {
+    width: 100%;
+    justify-content: space-between;
   }
   .home-bottom {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(24px, 3vw, 42px);
-    padding-top: 7px;
+    padding-top: 34px;
     align-items: start;
   }
   .quick-process,
@@ -1055,20 +1050,8 @@
     font-size: 12px;
     gap: 9px;
   }
-  .path-options,
   .home-bottom {
     gap: 24px;
-  }
-  .path-option {
-    gap: 12px;
-  }
-  .path-option h3 {
-    font-size: 21px;
-  }
-  .path-number {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
   }
   .reading-layout {
     grid-template-columns: minmax(0, 1fr) 210px;
@@ -1091,6 +1074,14 @@
   .hero h1 {
     font-size: clamp(44px, 5vw, 56px);
   }
+  .hero-start {
+    flex-direction: row;
+    align-items: center;
+  }
+  .hero-start > * {
+    flex: 1;
+    min-width: 0;
+  }
   .fork-diagram {
     max-width: 590px;
   }
@@ -1112,16 +1103,8 @@
     max-width: 590px;
     margin-top: 0;
   }
-  .path-options,
   .home-bottom {
     grid-template-columns: 1fr;
-  }
-  .path-options {
-    gap: 6px;
-    margin-top: 15px;
-  }
-  .path-option p {
-    font-size: 14px;
   }
   .home-bottom {
     gap: 30px;
@@ -1209,6 +1192,14 @@
     max-width: 130px;
     line-height: 1.4;
   }
+  .hero-start {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+  .hero-start > * {
+    flex: auto;
+  }
   .hero {
     padding-block: 35px 30px;
     gap: 27px;
@@ -1224,24 +1215,6 @@
     font-size: 12px;
     padding-inline: 13px;
     gap: 10px;
-  }
-  .entry-section {
-    padding-block: 27px;
-  }
-  .entry-section h2 {
-    font-size: 30px;
-  }
-  .path-option {
-    gap: 15px;
-    padding-block: 17px;
-  }
-  .path-option h3 {
-    font-size: 23px;
-  }
-  .path-number {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
   }
   .quick-process h2 {
     font-size: 28px;
