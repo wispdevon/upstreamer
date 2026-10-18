@@ -102,7 +102,7 @@ function ThemeToggle() {
       'meta[name="theme-color"]',
     );
     if (themeColor) {
-      themeColor.content = theme === "dark" ? "#313233" : "#f8f7f3";
+      themeColor.content = theme === "dark" ? "#17231f" : "#ffffff";
     }
   }, [theme]);
 
