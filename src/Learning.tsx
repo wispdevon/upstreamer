@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Check,
@@ -139,8 +139,8 @@ export function LessonPage() {
   const { id } = useParams();
   const { state, setState } = useApp();
   const [choice, setChoice] = useState<number | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [completeMessage, setCompleteMessage] = useState("");
+  const [result, setResult] = useState<"correct" | "incorrect" | "empty" | null>(null);
+  const firstAnswer = useRef<HTMLButtonElement>(null);
   const lesson = lessons.find((item) => item.id === id);
   if (!lesson)
     return (
@@ -191,73 +191,82 @@ export function LessonPage() {
             className="exercise"
             onSubmit={(event) => {
               event.preventDefault();
-              if (choice !== null) setChecked(true);
+              if (choice === null) {
+                setResult("empty");
+                firstAnswer.current?.focus();
+                return;
+              }
+              const correct = choice === lesson.answer;
+              setResult(correct ? "correct" : "incorrect");
+              setState((old) => ({
+                ...old,
+                completed: correct
+                  ? [...new Set([...old.completed, lesson.id])]
+                  : old.completed.filter((value) => value !== lesson.id),
+              }));
+              if (!correct) {
+                setChoice(null);
+                firstAnswer.current?.focus();
+              }
             }}
           >
             <fieldset>
               <legend>Put it into practice</legend>
-              <p className="exercise-question">{lesson.question}</p>
-              {lesson.choices.map((text, i) => (
-                <label className="answer" key={text}>
-                  <input
-                    type="radio"
-                    name={`answer-${lesson.id}`}
-                    value={i}
-                    required
-                    checked={choice === i}
-                    onChange={() => {
+              <p className="exercise-question" id="exercise-question">{lesson.question}</p>
+              <div className="answer-options">
+                {lesson.choices.map((text, i) => (
+                  <button
+                    className="answer"
+                    type="button"
+                    key={text}
+                    ref={i === 0 ? firstAnswer : undefined}
+                    aria-pressed={choice === i}
+                    aria-describedby="exercise-question"
+                    onClick={() => {
                       setChoice(i);
-                      setChecked(false);
+                      setResult(null);
                     }}
-                  />
-                  <span>{text}</span>
-                </label>
-              ))}
+                  >
+                    <span className="answer-marker" aria-hidden="true">
+                      {choice === i ? <Check size={17} /> : String.fromCharCode(65 + i)}
+                    </span>
+                    <span>{text}</span>
+                  </button>
+                ))}
+              </div>
             </fieldset>
             <button className="button secondary" type="submit">
               Check your thinking
               <Arrow />
             </button>
-            {checked && (
+            {result && (
               <div
-                className={`feedback ${choice === lesson.answer ? "correct" : ""}`}
+                className={`feedback ${result === "correct" ? "correct" : ""}`}
                 role="status"
               >
                 <strong>
-                  {choice === lesson.answer
+                  {result === "correct"
                     ? "That’s the idea."
-                    : "Take another look."}
+                    : result === "empty"
+                      ? "Choose an answer before submitting."
+                      : "Take another look."}
                 </strong>
-                <p>
-                  {choice === lesson.answer
-                    ? lesson.feedback
-                    : `Consider this: ${lesson.feedback}`}
-                </p>
+                {result !== "empty" && (
+                  <p>
+                    {result === "correct"
+                      ? lesson.feedback
+                      : `Consider this: ${lesson.feedback} Choose an answer and try again.`}
+                  </p>
+                )}
               </div>
             )}
           </form>
-          <div className="lesson-complete">
-            <button
-              className={`button ${complete ? "secondary" : "primary"}`}
-              onClick={() => {
-                setState((old) => ({
-                  ...old,
-                  completed: complete
-                    ? old.completed.filter((value) => value !== lesson.id)
-                    : [...old.completed, lesson.id],
-                }));
-                setCompleteMessage(
-                  complete
-                    ? "Lesson marked incomplete."
-                    : "Lesson marked complete.",
-                );
-              }}
-            >
-              {complete ? <CheckCircle2 size={18} /> : <Check size={18} />}
-              {complete ? "Completed — undo" : "Mark lesson complete"}
-            </button>
-            <span role="status">{completeMessage}</span>
-          </div>
+          {complete && (
+            <p className="lesson-complete">
+              <CheckCircle2 size={18} aria-hidden="true" />
+              Lesson complete
+            </p>
+          )}
           <nav className="lesson-pagination" aria-label="Lesson navigation">
             <div>
               {previous && (
@@ -266,10 +275,15 @@ export function LessonPage() {
                 </TextLink>
               )}
             </div>
-            {next ? (
-              <TextLink to={`/learn/${next.id}`}>{next.title}</TextLink>
-            ) : (
-              <TextLink to="/studio">Put it to work</TextLink>
+            {complete && (
+              <Link
+                className="button primary"
+                to={next ? `/learn/${next.id}` : "/studio"}
+                aria-label={next ? `Next lesson: ${next.title}` : "Put it to work"}
+              >
+                {next ? "Next lesson" : "Put it to work"}
+                <Arrow />
+              </Link>
             )}
           </nav>
         </article>

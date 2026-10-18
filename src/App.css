@@ -3,11 +3,15 @@
     border-bottom: 1px solid var(--line);
     background: var(--paper);
   }
-  .site-header-inner {
+  .site-header-inner,
+  .workspace {
     max-width: 1560px;
     margin-inline: auto;
-    padding: 28px clamp(24px, 4vw, 64px);
+    padding-inline: clamp(24px, 4vw, 64px);
     box-sizing: border-box;
+  }
+  .site-header-inner {
+    padding-block: 28px;
     display: flex;
     align-items: center;
     gap: clamp(20px, 2.5vw, 40px);
@@ -81,11 +85,6 @@
   .nav-button.active {
     background: var(--active-nav);
     color: var(--rust);
-  }
-  .workspace {
-    max-width: 1560px;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 4vw, 64px);
   }
   .topbar {
     display: flex;
@@ -603,17 +602,48 @@
     color: var(--ink);
     margin-block: 15px;
   }
+  .answer-options {
+    display: grid;
+    gap: 12px;
+  }
   .answer {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding-block: 13px;
-    min-height: 48px;
-    font-size: 15px;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 18px 20px;
+    min-height: 64px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: start;
     cursor: pointer;
   }
-  .answer input {
-    margin-top: 4px;
+  .answer:hover {
+    background: var(--panel);
+  }
+  .answer[aria-pressed="true"] {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+    background: var(--panel);
+  }
+  .answer-marker {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    font-size: 12px;
+  }
+  .answer[aria-pressed="true"] .answer-marker {
+    background: var(--color-coral);
+    border-color: var(--color-coral);
+    color: var(--color-charcoal);
   }
   .exercise .button {
     margin-top: 18px;
@@ -1139,7 +1169,7 @@
     line-height: 1.25;
   }
   .workspace {
-    padding-inline: 22px;
+    padding-inline: 24px;
   }
   .topbar {
     min-height: 48px;
@@ -1238,7 +1268,8 @@
     font-size: 27px;
   }
   .answer {
-    font-size: 14px;
+    padding: 16px;
+    gap: 12px;
   }
   .lesson-pagination {
     gap: 22px;
@@ -1342,9 +1373,6 @@
 
 @media (max-width: 420px) {
   .site-header-inner,
-  .primary-nav {
-    padding-inline: 14px;
-  }
   .workspace {
     padding-inline: 16px;
   }

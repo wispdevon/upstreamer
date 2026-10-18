@@ -51,33 +51,77 @@ test("the homepage path buttons support keyboard activation", async ({ page }) =
   await expect(page).toHaveURL(`/learn/${workflow[0].id}`);
 });
 
-test("lesson exercises, completion, and route focus work together", async ({ page }) => {
+test("lesson answer buttons reset on failure and complete on a correct submission", async ({ page }) => {
   await page.goto("/learn/dependencies");
-  await page.getByRole("radio", { name: "Yes, Git has verified it" }).check();
-  await page.getByRole("button", { name: "Check your thinking" }).click();
+  const submit = page.getByRole("button", { name: "Check your thinking" });
+  await submit.click();
+  await expect(page.getByText("Choose an answer before submitting.")).toBeVisible();
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "0");
+  const wrong = page.getByRole("button", { name: "Yes, Git has verified it", exact: true });
+  await wrong.click();
+  await expect(wrong).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "0");
+  await submit.click();
   await expect(page.getByText("Take another look.")).toBeVisible();
-  await page.getByRole("radio", { name: /Not yet: inspect dependencies/ }).check();
-  await page.getByRole("button", { name: "Check your thinking" }).click();
+  await expect(page.locator('.answer[aria-pressed="true"]')).toHaveCount(0);
+  await expect(page.locator(".answer").first()).toBeFocused();
+  const correct = page.getByRole("button", { name: /Not yet: inspect dependencies/ });
+  await correct.click();
+  await expect(wrong).toHaveAttribute("aria-pressed", "false");
+  await expect(correct).toHaveAttribute("aria-pressed", "true");
+  await submit.click();
   await expect(page.getByText("That’s the idea.")).toBeVisible();
-  await page.getByRole("button", { name: "Mark lesson complete" }).click();
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "1");
   await page.reload();
-  await expect(page.getByRole("button", { name: "Completed — undo" })).toBeVisible();
-  await page.getByRole("link", { name: "Keep history honest" }).click();
+  await expect(page.getByText("Lesson complete", { exact: true })).toBeVisible();
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "1");
+  await page.getByRole("link", { name: "Next lesson: Keep history honest" }).click();
+  await expect(page).toHaveURL("/learn/history");
   await expect(page.locator("main")).toBeFocused();
+  await expect(page.locator('.answer[aria-pressed="true"]')).toHaveCount(0);
 });
 
-test("every lesson can be completed and undone", async ({ page }) => {
+test("every lesson completes automatically and the final lesson opens the studio", async ({ page }) => {
   for (const lesson of lessons) {
     await page.goto(`/learn/${lesson.id}`);
-    await expect(page.getByRole("heading", { name: lesson.title, exact: true })).toBeVisible();
-    await page.getByRole("radio", { name: lesson.choices[lesson.answer], exact: true }).check();
+    await page.getByRole("button", { name: lesson.choices[lesson.answer], exact: true }).click();
     await page.getByRole("button", { name: "Check your thinking" }).click();
     await expect(page.getByText("That’s the idea.")).toBeVisible();
-    await page.getByRole("button", { name: "Mark lesson complete" }).click();
+    await expect(page.getByText("Lesson complete", { exact: true })).toBeVisible();
   }
-  await expect(page.getByRole("progressbar", { name: "Completed lessons" })).toHaveAttribute("value", "10");
-  await page.getByRole("button", { name: "Completed — undo" }).click();
-  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "9");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "10");
+  await page.getByRole("link", { name: "Put it to work" }).click();
+  await expect(page).toHaveURL("/studio");
+});
+
+test("a failed retry resets only the current lesson's completion", async ({ page }) => {
+  await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+    key: storageKey,
+    value: JSON.stringify({ ...createState(), completed: ["dependencies", "maintainer"] }),
+  });
+  await page.goto("/learn/dependencies");
+  await page.getByRole("button", { name: "Yes, Git has verified it", exact: true }).click();
+  await page.getByRole("button", { name: "Check your thinking" }).click();
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "1");
+  expect(await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).completed, storageKey)).toEqual(["maintainer"]);
+});
+
+test("lesson answers and submission work from the keyboard", async ({ page }) => {
+  await page.goto("/learn/dependencies");
+  const correct = page.getByRole("button", { name: /Not yet: inspect dependencies/ });
+  await correct.focus();
+  await page.keyboard.press("Space");
+  await expect(correct).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Check your thinking" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value", "1");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Next lesson: Keep history honest" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL("/learn/history");
 });
 
 test("review answers and handoff edits persist together in the studio", async ({ page }) => {
@@ -179,7 +223,7 @@ test("storage quota errors retain the session and allow Markdown export", async 
 });
 
 test("pill navigation fits mobile and desktop and exposes the active destination", async ({ page }) => {
-  for (const width of [360, 768, 1024, 1270, 1440]) {
+  for (const width of [360, 768, 1024, 1270, 1440, 1800]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main navigation" });
@@ -191,6 +235,16 @@ test("pill navigation fits mobile and desktop and exposes the active destination
     const main = await page.locator("main").boundingBox();
     expect(diagram).not.toBeNull();
     expect(main).not.toBeNull();
+    const brand = (await page.locator(".brand").boundingBox())!;
+    const header = (await page.locator(".site-header-inner").boundingBox())!;
+    const headerPadding = await page.locator(".site-header-inner").evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { left: parseFloat(style.paddingLeft), right: parseFloat(style.paddingRight) };
+    });
+    expect(Math.abs(brand.x - main!.x)).toBeLessThan(1);
+    expect(Math.abs(header.x + headerPadding.left - main!.x)).toBeLessThan(1);
+    expect(Math.abs(header.x + header.width - headerPadding.right - (main!.x + main!.width))).toBeLessThan(1);
+
     expect(diagram!.x).toBeGreaterThanOrEqual(main!.x);
     expect(diagram!.x + diagram!.width).toBeLessThanOrEqual(main!.x + main!.width + 1);
     const heroActions = (await page.getByRole("group", { name: "Choose a starting point" }).boundingBox())!;
@@ -253,7 +307,7 @@ test("home and studio meet WCAG A/AA automated checks", async ({ page }) => {
     await page.emulateMedia({ colorScheme });
     for (const width of [360, 1440]) {
       await page.setViewportSize({ width, height: 900 });
-      for (const route of ["/", "/studio"]) {
+      for (const route of ["/", "/studio", "/learn/dependencies"]) {
         await page.goto(route);
         const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
         expect(results.violations).toEqual([]);
@@ -300,4 +354,23 @@ test("the companion skill download remains available", async ({ page }) => {
   await page.getByRole("link", { name: "Download Codex skill" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("fork-to-upstream.zip");
+});
+
+test("lesson answer states meet mobile accessibility checks in both themes", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 900 });
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/learn/dependencies");
+    const wrong = page.getByRole("button", { name: "Yes, Git has verified it", exact: true });
+    await wrong.click();
+    expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze()).violations).toEqual([]);
+    await page.getByRole("button", { name: "Check your thinking" }).click();
+    await expect(page.locator('.answer[aria-pressed="true"]')).toHaveCount(0);
+    expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze()).violations).toEqual([]);
+    await page.getByRole("button", { name: /Not yet: inspect dependencies/ }).click();
+    await page.getByRole("button", { name: "Check your thinking" }).click();
+    await expect(page.getByRole("link", { name: "Next lesson: Keep history honest" })).toBeVisible();
+    expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze()).violations).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
 });

@@ -49,6 +49,8 @@ Routes: `/`, `/learn`, `/learn/:id`, `/examples`, `/studio`, `/skill`. Previous 
 
 Learning progress, review answers, an editable contribution draft, and the theme override stay in localStorage on the current browser/origin. On first visit after the v2 update, existing v1 progress and review answers migrate, and an existing draft is kept; otherwise the old contribution brief becomes an editable draft. The v1 record remains untouched during migration. The theme follows the device setting until someone chooses a light or dark override. There are no analytics, external font requests, accounts, cloud sync, or repository uploads. Clearing site data removes the current local work. The draft reading view renders text safely and never evaluates HTML.
 
+Lesson answers are selectable buttons with a separate submission. A correct answer saves completion and offers the next lesson; a failed attempt clears the selection and resets only that lesson, leaving other progress intact.
+
 The review checklist is a self-review aid beside the handoff draft. It does not certify merge readiness. The starter draft says verification has not been run; contributors replace that with actual results. The studio offers Markdown download.
 
 ## Companion skill
