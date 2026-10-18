@@ -32,6 +32,7 @@
   }
   .brand svg {
     color: var(--rust);
+    color: light-dark(#d34b18, var(--color-red-soft));
   }
   .brand span {
     font: 33px var(--serif);
@@ -199,10 +200,11 @@
   }
   .main-line {
     stroke: var(--ink);
-    stroke: light-dark(var(--color-blue-deep), var(--color-blue));
+    stroke: light-dark(var(--color-blue-deep), var(--color-mint));
   }
   .branch-line {
     stroke: var(--rust);
+    stroke: light-dark(#d34b18, var(--color-red-soft));
   }
   .dashed-line {
     stroke-width: 1;
@@ -216,13 +218,15 @@
   }
   .upstream-node {
     stroke: var(--ink);
-    stroke: light-dark(var(--color-blue-deep), var(--color-blue));
+    stroke: light-dark(var(--color-blue-deep), var(--color-mint));
   }
   .fork-node {
     stroke: var(--rust);
+    stroke: light-dark(#d34b18, var(--color-red-soft));
   }
   .merge-node {
     fill: var(--color-peach-bright);
+    fill: light-dark(var(--color-peach-bright), var(--color-mint));
     stroke: var(--paper);
     stroke-width: 2;
   }
@@ -267,7 +271,7 @@
   }
   .button.primary {
     background: var(--rust-fill);
-    color: var(--color-blue-deep);
+    color: #17231f;
   }
   .button.primary:hover {
     background: var(--rust-fill-hover);
@@ -358,7 +362,7 @@
     border: 1px solid var(--line);
     border-radius: 5px;
     background: var(--panel);
-    background: light-dark(#eef2fb, #253047);
+    background: light-dark(#eef2fb, #23372f);
   }
   .featured-pr-card h2 {
     margin-block: 13px 14px;
@@ -644,7 +648,7 @@
   .answer[aria-pressed="true"] .answer-marker {
     background: var(--color-mint);
     border-color: var(--rust);
-    color: var(--color-blue-deep);
+    color: #17231f;
   }
   .exercise .button {
     margin-top: 18px;
