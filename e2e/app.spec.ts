@@ -198,8 +198,6 @@ test("removed routes redirect into the simplified navigation", async ({ page }) 
     await expect(page).toHaveURL(/\/studio$/);
     await expect(page.getByRole("heading", { name: "Review the change. Write the handoff." })).toBeVisible();
   }
-  await page.goto("/notes");
-  await expect(page).toHaveURL(/\/$/);
 });
 
 test("malformed saved data stays untouched and the studio remains usable", async ({ page }) => {
@@ -227,7 +225,7 @@ test("pill navigation fits mobile and desktop and exposes the active destination
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main navigation" });
-    await expect(nav.getByRole("link")).toHaveCount(5);
+    await expect(nav.getByRole("link")).toHaveCount(6);
     await expect(nav.getByRole("link", { name: "Start here" })).toHaveAttribute("aria-current", "page");
     await expect(nav.getByRole("link", { name: "Review & draft" })).toHaveCSS("border-radius", "999px");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

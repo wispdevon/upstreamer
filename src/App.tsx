@@ -29,6 +29,8 @@ import { StateContext, useApp, usePersistentState } from "./state";
 import { Arrow, PageHeading, TextLink } from "./ui";
 import { ExamplePage, LearnPage, LessonPage } from "./Learning";
 import { SkillPage, StudioPage } from "./Tools";
+import { NotesPage } from "./Notes";
+import { useJournal } from "./journal-state";
 import "./App.css";
 
 const navigation = [
@@ -36,6 +38,7 @@ const navigation = [
   { to: "/learn", label: "Learn the workflow", icon: BookOpen },
   { to: "/examples", label: "Worked examples", icon: FileText },
   { to: "/studio", label: "Review & draft", icon: ClipboardCheck },
+  { to: "/notes", label: "Learning notes", icon: FileText },
   { to: "/skill", label: "Agent skill", icon: Sparkles },
 ];
 
@@ -252,7 +255,11 @@ function StartPage() {
 }
 function App() {
   const { state, setState, warning, saveStatus } = usePersistentState();
+  const journal = useJournal();
   const location = useLocation();
+  const activeStorage = location.pathname.replace(/\/+$/, "") === "/notes"
+    ? journal
+    : { warning, saveStatus };
   const mainRef = useRef<HTMLElement>(null);
   const previousRoute = useRef(location.pathname);
   useEffect(() => {
@@ -314,14 +321,14 @@ function App() {
               </div>
               <div className="save-indicator" role="status">
                 <Save size={15} aria-hidden="true" />
-                {saveStatus}
+                {activeStorage.saveStatus}
               </div>
             </div>
           </div>
         )}
-        {warning && (
+        {activeStorage.warning && (
           <div className="storage-warning" role="alert">
-            {warning}
+            {activeStorage.warning}
           </div>
         )}
         <main id="main-content" tabIndex={-1} ref={mainRef}>
@@ -346,7 +353,7 @@ function App() {
               path="/draft"
               element={<Navigate to="/studio" replace />}
             />
-            <Route path="/notes" element={<Navigate to="/" replace />} />
+            <Route path="/notes" element={<NotesPage journal={journal} />} />
             <Route path="/skill" element={<SkillPage />} />
             <Route
               path="*"

@@ -69,8 +69,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    padding: 13px 17px;
+    gap: 7px;
+    padding: 13px 12px;
     border-radius: 999px;
     border: 1px solid var(--line);
     min-height: 44px;
@@ -1406,5 +1406,113 @@
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
+  }
+}
+
+@layer components {
+  .journal-toolbar {
+    padding-block: 8px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .journal-privacy {
+    max-width: 740px;
+    margin-top: 20px;
+  }
+  .journal-recovery {
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+  }
+  .journal-recovery p {
+    font-size: 14px;
+  }
+  .journal-layout {
+    display: grid;
+    grid-template-columns: minmax(180px, 260px) minmax(0, 760px);
+    gap: clamp(28px, 5vw, 72px);
+    align-items: start;
+    padding-bottom: 32px;
+  }
+  .journal-index,
+  .journal-editor {
+    min-width: 0;
+  }
+  .journal-layout .section-heading {
+    margin-top: 16px;
+  }
+  .journal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .journal-list li {
+    border-bottom: 1px solid var(--line);
+  }
+  .journal-list button {
+    width: 100%;
+    min-height: 48px;
+    padding: 16px 12px;
+    text-align: start;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .journal-list button[aria-pressed="true"] {
+    color: var(--rust);
+    background: var(--panel);
+    border-inline-start: 3px solid var(--rust);
+    font-weight: 600;
+  }
+  .journal-list button:hover {
+    background: var(--panel);
+  }
+  .journal-help {
+    margin-bottom: 24px;
+  }
+  .journal-field {
+    margin-bottom: 28px;
+  }
+  .journal-field label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .journal-field .small-print {
+    margin-block: 0 12px;
+  }
+  .journal-note-actions {
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+  }
+  .journal-empty {
+    padding-block: 40px 64px;
+    max-width: 620px;
+  }
+  .journal-empty h2 {
+    font-size: 32px;
+    margin-block: 12px 16px;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1439px) {
+  .site-header-inner {
+    gap: 20px;
+  }
+  .primary-nav {
+    gap: 6px;
+  }
+  .nav-button {
+    font-size: 12px;
+    gap: 6px;
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 700px) {
+  .journal-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
   }
 }
