@@ -51,6 +51,10 @@ Use the project's PR template when present. Read [handoff.md](references/handoff
 
 Do not push, open PRs, post comments, or message maintainers unless the user requests those actions. Existing explicit publication authorization remains valid within its scope; do not ask for it again. Never merge or force-push by implication. When preparation is the requested outcome, end with a concrete reviewable result, not a publication permission question.
 
+## Capture useful learning
+
+When the contribution reveals a transferable developer lesson, read [learning-capture.md](references/learning-capture.md). Record an evidence-backed note and a small next practice opportunity in the project's established learning location. Adapt an existing lesson, tool, or skill when a verified need fits the authorized scope; plan larger opportunities separately. Learning capture does not authorize publication or unrelated feature work.
+
 ## Companion app contract
 
 The field guide's shared workflow and checklist IDs are in [workflow-contract.json](references/workflow-contract.json). Consult it when aligning an output with the guide. It defines vocabulary and questions, not proof that work has been performed. Use repository context and the user's request to shape the handoff; no app, account, or special integration is required.

@@ -39,11 +39,13 @@ The app uses Tailwind CSS through its Vite plugin, with shared palette tokens in
 - `src/content.ts`: lesson content, two fictional examples, canonical workflow IDs, and checklist definitions.
 - `src/model.ts` and `src/state.ts`: versioned local persistence, legacy migration, validation, and failure recovery.
 - `src/Learning.tsx` and `src/Tools.tsx`: learning, read-only examples, the combined review-and-draft studio, and skill installation UI.
+- `src/Notes.tsx`, `src/journal.ts`, and `src/journal-state.ts`: learning journal, Markdown exports, and separate persistence and recovery.
+- `docs/learning/`: agent-maintained learning notes, a reusable template, and evidence-driven improvement backlog.
 - `skills/fork-to-upstream/`: editable companion skill and supporting references. The shared contract JSON is generated from app content.
 - `scripts/package-skill.mjs`: deterministic, self-contained ZIP at `public/downloads/fork-to-upstream.zip`. Generated downloads and build output are ignored by Git.
 - `DESIGN.md`: visual and accessibility contract. The concept image is retained in `docs/design/` as a design artifact, not shipped to visitors.
 
-Routes: `/`, `/learn`, `/learn/:id`, `/examples`, `/studio`, `/skill`. Previous `/workbench`, `/review`, and `/draft` URLs redirect to `/studio`; `/notes` redirects to the start page. The Worker serves the SPA shell on direct navigation.
+Routes: `/`, `/learn`, `/learn/:id`, `/examples`, `/studio`, `/notes`, `/skill`. Previous `/workbench`, `/review`, and `/draft` URLs redirect to `/studio`. The Worker serves the SPA shell on direct navigation.
 
 ## Data and privacy
 
@@ -52,6 +54,14 @@ Learning progress, review answers, an editable contribution draft, and the theme
 Lesson answers are selectable buttons with a separate submission. A correct answer saves completion and offers the next lesson; a failed attempt clears the selection and resets only that lesson, leaving other progress intact.
 
 The review checklist is a self-review aid beside the handoff draft. It does not certify merge readiness. The starter draft says verification has not been run; contributors replace that with actual results. The studio offers Markdown download.
+
+## Learning journal
+
+At `/notes`, create and select notes, edit their learning objective, project context, lesson, evidence and limitations, next practice, and reusable skill or tool ideas. Edits autosave without moving the caret; deletion requires confirmation. Download a single note or the full journal as Markdown.
+
+The journal uses its own `upstreamer-learning-journal-v1` record and does not migrate or modify contribution saves. If browser storage is blocked or full, notes remain in the current session across route changes and exports still work. An unreadable saved journal stays untouched until you explicitly replace it with this session's notes. Export before closing a session that could not save.
+
+Notes stay on the current browser/origin; clearing site data removes them. They do not synchronize with [repository learning notes](docs/learning/README.md). Give exported Markdown to your agent to adapt into a repository note. Recording a lesson or entering evidence does not certify verification or mastery.
 
 ## Companion skill
 
